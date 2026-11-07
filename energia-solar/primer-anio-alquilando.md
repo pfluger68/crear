@@ -118,3 +118,27 @@ días** de corte.
 
 Mientras alquilás, podés usar el año para **elegir bien el terreno**
 (ver [emergencia-y-terreno.md](emergencia-y-terreno.md)).
+
+---
+
+## Equipos elegidos y dónde comprarlos (revisado 07/11/2026)
+
+> ❌ **Evitar** el "Kit UPS 5 kW · 4,8 kWh" de Enertik: trae **baterías de plomo AGM**
+> (4 × 12 V) e inversor PWM, no litio. Rinde la mitad y dura mucho menos.
+
+### Combo A — mejor precio con compatibilidad confirmada (~$4 millones)
+
+| Pieza | Dónde | Precio |
+|---|---|---|
+| Inversor **Growatt SPF 5000 ES** (48 V, 5 kW, off-grid, MPPT) | [Mercado Libre](https://articulo.mercadolibre.com.ar/MLA-899637945-inversor-growatt-off-grid-spf-5000-es-5000-w-1-mppt-48-v-_JM) / [otras publicaciones](https://listado.mercadolibre.com.ar/growatt-5000-es) | ~$1,25 – 1,58 M (6 cuotas) |
+| Batería **Ritar R-LFP48V100Ah** (LiFePO4, 4,8 kWh, 2 años de garantía) — el fabricante la declara **compatible con Growatt, cable incluido** | [Enertik](https://enertik.com/ar/tienda/baterias/litio/bateria-de-litio-ritar-48v-100ah-48kwh/) | $2.754.300 (hay stock) |
+
+### Combo B — más calidad y garantía (~$4,3 millones)
+
+| Pieza | Dónde | Precio |
+|---|---|---|
+| Inversor **Deye SUN-6K-OG02LP1** (48 V, 6 kW, off-grid, **5 años de garantía**) | [Enertik](https://enertik.com/ar/tienda/inversores/inversores-cargadores/con-regulador-solar-mppt/inversor-y-cargador-de-baterias-deye-monofasico-6000w-48vcc-ip65/) · [Electroimpulso](https://electroimpulso.com.ar/catalogo/producto/inversor-cargador-deye-6000w-48v/) · [Americars, 12 cuotas s/interés (modelo 6,6 kW)](https://americars.com.ar/p/inversor-solar-deye-sun-6-6-kw-off-grid-48v-mppt-wifi/a6025530-1e64-4903-9453-3be58fa8fd0b) | $1,20 – 1,37 M |
+| Batería **Dyness DL5.0C** (LiFePO4, 5,1 kWh) — confirmar compatibilidad con Deye por escrito | [Mercado Libre](https://www.mercadolibre.com.ar/bateria-litio-solar-48v-dyness-dl50c-100ah-lifepo4-51kw/up/MLAU452853384) | ~$2,98 M |
+
+⚠️ Las cuotas de Mercado Libre suelen tener **interés** (ej.: 6 × $682.831 = $4,1 M
+contra $2,98 M de contado). Buscar "cuotas sin interés" o promociones bancarias.
