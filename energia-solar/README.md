@@ -10,6 +10,7 @@ Cada compra sirve sola o se suma a la anterior: nada se tira.
 
 | Archivo | Para qué sirve |
 |---|---|
+| [primer-anio-alquilando.md](primer-anio-alquilando.md) | **Empezar acá:** equipo móvil contra los cortes mientras alquilo, sin tocar la casa |
 | [lista-de-compras.md](lista-de-compras.md) | Qué comprar en cada etapa, con medidas exactas (cables, fusibles, térmicas) |
 | [esquema-de-conexion.md](esquema-de-conexion.md) | Cómo se conecta todo |
 | [instalacion-paso-a-paso.md](instalacion-paso-a-paso.md) | Orden de armado, configuración del inversor y controles de seguridad |
