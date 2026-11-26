@@ -217,6 +217,22 @@ kbd{font:11px var(--f-data);border:1px solid var(--line);border-bottom-width:2px
   .chartbox{height:clamp(400px,66vh,560px)}
   .watch{max-height:340px}
 }
+@media (max-width:640px){
+  body{padding-top:max(8px,env(safe-area-inset-top,0px))}
+  .app{gap:8px}
+  .top{gap:6px 14px;padding:10px 12px}
+  .logo{width:32px;height:32px}
+  .px{font-size:1.35rem}
+  .stats{gap:4px 14px;font-size:11.5px}
+  .status{padding:5px 8px;font-size:12px}
+  .toolbar{flex-wrap:nowrap;overflow-x:auto;gap:8px;padding:6px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .toolbar::-webkit-scrollbar{display:none}
+  .toolbar .group{flex-wrap:nowrap;flex:none}
+  .toolbar .sep{flex:none}
+  .toolbar button,.toolbar select{white-space:nowrap}
+  .legend{font-size:11px;right:78px}
+  .legend .lg + .lg{display:none}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -1050,6 +1066,7 @@ function render(){
       ctx.globalAlpha = 1; ctx.setLineDash([]);
     }
   }
+  ctx.save(); ctx.beginPath(); ctx.rect(0, pTop - 6, plotW, mainH - pTop + 6); ctx.clip();
   if (state.show.plan && plan && market.id === plan.mercado){
     const t0 = Date.parse(plan.fecha + 'T00:00:00Z') / 1000;
     const xs = Math.max(0, X(tToI(t0)) - bw / 2);
@@ -1064,11 +1081,14 @@ function render(){
       ctx.fillText(`Plan · ${buy ? 'compra' : 'venta'} ${fP(z.desde)}–${fP(z.hasta)}`, xs + 6, y0 + 10);
     }
     ctx.textAlign = 'right';
+    const usados = [];
     for (const o of plan.operaciones){
       const nm = o.lado === 'compra' ? 'compra' : 'venta';
       for (const [k, col, lab] of [['entrada', C.sel, `Entrada ${nm} `], ['sl', C.down, `SL ${nm} `], ['tp1', C.up, `TP1 ${nm} `]]){
         const y = Y(o[k]); ctx.strokeStyle = col; ctx.lineWidth = k === 'entrada' ? 1.6 : 1; ctx.setLineDash(k === 'entrada' ? [] : [6, 4]);
         ctx.beginPath(); ctx.moveTo(xs, y); ctx.lineTo(plotW, y); ctx.stroke(); ctx.setLineDash([]);
+        if (usados.some(u => Math.abs(u - y) < 12)) continue;
+        usados.push(y);
         ctx.fillStyle = col; ctx.font = `10px ${FONT}`; ctx.fillText(lab + fP(o[k]), plotW - 6, y - 6);
       }
     }
@@ -1085,6 +1105,7 @@ function render(){
       ctx.fillText(`Auto · ${buy ? 'soporte' : 'resistencia'} ${fP(z.desde)}–${fP(z.hasta)} · peso ${f1(z.peso)}`, xs + 6, y1 - 7);
     }
   }
+  ctx.restore();
   for (const a of alerts.list) if (a.mkt === market.id && a.on){
     ctx.strokeStyle = C.accent; ctx.lineWidth = 1; ctx.setLineDash([2, 2]);
     if (a.tipo === 'precio'){ const y = Y(a.precio); ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(plotW, y); ctx.stroke(); ctx.setLineDash([]); textTag(plotW - 6, y, '🔔 ' + fP(a.precio), C.accent, C.panel, 'right'); }
