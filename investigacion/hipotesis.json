@@ -1,16 +1,6 @@
 {
  "hipotesis": [
   {
-   "id": "H006",
-   "nombre": "Detector de régimen",
-   "idea": "Medir si el mercado está en modo reversión o continuación (p. ej. autocorrelación de retornos de 1 h en 20 días, ratio de varianzas, Hurst) y comprobar si ese régimen predice si funciona H003 normal o invertida.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
    "id": "H007",
    "nombre": "Barrida de liquidez del máximo/mínimo de ayer",
    "idea": "Cuando el precio supera el máximo (o mínimo) del día anterior y en la misma vela de 1 h o la siguiente vuelve a cerrar dentro, ¿revierte hacia el pivote? Separar por régimen.",
@@ -363,7 +353,51 @@
     "azar_media_pb_p95": 2.72
    },
    "nota": "Significativa en muestra (t=2,35), positiva pero no significativa en validación (n=44). A 12 h no funciona. Seguir en vivo cada domingo."
+  },
+  {
+   "id": "H006",
+   "nombre": "Detector de régimen",
+   "idea": "Operar la ruptura del rango asiático a favor si el ratio de varianzas VR(4) de 30 días es > 1 (continuación) y en contra si es < 1 (reversión).",
+   "estado": "rechazada",
+   "codigo": "hipotesis/h006_detector_regimen.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 4,
+    "costo_pb": 3.0,
+    "muestra": {
+     "n": 553,
+     "media_pb": 1.88,
+     "aciertos_pct": 52.8,
+     "total_pct": 10.42,
+     "t": 1.03,
+     "p": 0.3031,
+     "factor_beneficio": 1.13,
+     "media_bruta_pb": 4.88
+    },
+    "validacion": {
+     "n": 409,
+     "media_pb": -3.8,
+     "aciertos_pct": 47.2,
+     "total_pct": -15.56,
+     "t": -1.62,
+     "p": 0.1047,
+     "factor_beneficio": 0.78,
+     "media_bruta_pb": -0.8
+    },
+    "total": {
+     "n": 962,
+     "media_pb": -0.53,
+     "aciertos_pct": 50.4,
+     "total_pct": -5.14,
+     "t": -0.37,
+     "p": 0.7125,
+     "factor_beneficio": 0.97,
+     "media_bruta_pb": 2.47
+    },
+    "azar_media_pb_p95": -0.87
+   },
+   "nota": "VR(4) de 1 h está casi siempre < 1 en el oro (96 % de las rupturas en muestra, 83 % en validación): el umbral 1 no separa regímenes, y en validación la regla pierde (-0,8 pb bruto). El orden sí es coherente (rupturas con VR>1 rinden más que con VR<1 en ambos tramos: -3,0 vs -5,5 pb en muestra; +17,4 vs +4,5 en validación), pero VR>1 tiene solo 22 casos en muestra. La variante adaptativa (últimas 20 rupturas) tampoco es significativa (val +3,5 pb bruto, t=0,22). Ojo: una versión con umbral relativo de VR ya estaría contaminada por haber visto la validación; si se prueba, solo se puede confirmar en seguimiento en vivo. VR(4) 30 d. Diagnóstico H003 bruto pb por régimen: [{'tramo': 'muestra', 'regimen': 'VR<1', 'count': 541, 'mean': -5.5}, {'tramo': 'muestra', 'regimen': 'VR>1', 'count': 22, 'mean': -3.0}, {'tramo': 'validacion', 'regimen': 'VR<1', 'count': 340, 'mean': 4.5}, {'tramo': 'validacion', 'regimen': 'VR>1', 'count': 69, 'mean': 17.4}]. Adaptativa (últimas 20 rupturas): MUESTRA n=546 neta=2.57pb bruta=5.57pb aciertos=48.9% t=1.4 p=0.1623 | VALIDACIÓN n=409 neta=0.51pb bruta=3.51pb aciertos=45.0% t=0.22 p=0.8271 | azar p95=-0.82pb"
   }
  ],
- "probadas": 5
+ "probadas": 6
 }

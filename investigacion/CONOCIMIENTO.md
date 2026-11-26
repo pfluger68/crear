@@ -29,6 +29,8 @@ Solo se escribe aquí lo que los datos sostienen. Las ideas sin probar van en `h
 
 ## Descartado
 
+- **H006 · Detector de régimen por ratio de varianzas (VR(4), 30 días):** rechazado. En el oro de 1 h el VR está casi siempre por debajo de 1 (96 % de las rupturas en muestra, 83 % en validación), así que el umbral 1 no separa regímenes; en validación la regla pierde (−0,8 pb bruto). La variante adaptativa (dirección de las últimas 20 rupturas) tampoco es significativa.
+  - Pista no confirmada: en ambos tramos las rupturas con VR > 1 rinden más que con VR < 1, pero con solo 22 casos en muestra. Un umbral relativo ya estaría contaminado por haber visto la validación: solo podría confirmarse en vivo.
 - **H002 · Martillo diario tras caída:** sin ventaja. No usar un martillo diario como razón para comprar.
 - **H003 y H004 como reglas fijas:** ver el cambio de régimen en "Hallazgos firmes".
 
@@ -40,7 +42,7 @@ Solo se escribe aquí lo que los datos sostienen. Las ideas sin probar van en `h
 ## Cómo usar esto en el plan diario
 
 - El plan mecánico (`plan_diario.py`) da zonas por coincidencia de niveles.
-- Mientras no exista un detector de régimen validado, se mantiene la regla prudente: **a favor del sesgo diario y con confirmación en 15 m**.
+- Mientras no exista un detector de régimen validado (H006 falló el 26-11), se mantiene la regla prudente: **a favor del sesgo diario y con confirmación en 15 m**.
 - Desde julio de 2024 el régimen premia la continuación. Los días de ruptura fuerte, no apostar contra el movimiento.
 
 ## Registro de sesiones
@@ -50,3 +52,8 @@ Solo se escribe aquí lo que los datos sostienen. Las ideas sin probar van en `h
   - Probadas H001–H005.
   - Hallazgo principal: cambio de régimen a mediados de 2024.
   - Siguiente paso: H006 (detector de régimen).
+- **2026-11-26** · Sesión 2:
+  - Probada H006 (detector de régimen por ratio de varianzas): rechazada; el VR de 1 h del oro casi nunca supera 1.
+  - Plan del día revisado: venta a favor del sesgo bajista pero contra el fuerte rebote de ayer; se exige confirmación. Acción de Gracias en EE. UU.
+  - Seguimiento H005: sin datos nuevos (próxima medición el lunes 30-11, con el domingo 29-11).
+  - Siguiente paso: H012 (firma de la apertura de Nueva York) o H010 (compresión antes de la expansión).
