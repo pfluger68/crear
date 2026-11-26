@@ -114,7 +114,7 @@ canvas.grabbing{cursor:grabbing}
 .side section{padding:12px;font:12px/1 var(--f-data);font-variant-numeric:tabular-nums;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column}
 h2{font:600 11px/1 var(--f-display);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 10px}
 .watch{max-height:310px}
-.wl{overflow-y:auto;margin:0 -6px;padding:0 6px;scrollbar-width:thin}
+.wl{position:relative;overflow-y:auto;margin:0 -6px;padding:0 6px;scrollbar-width:thin}
 .wl h3{font:600 10px/1 var(--f-ui);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:10px 0 4px}
 .wl h3:first-child{margin-top:0}
 .wrow{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;border-radius:6px;padding:6px 6px;font:12px/1.2 var(--f-data);font-variant-numeric:tabular-nums}
@@ -253,7 +253,7 @@ kbd{font:11px var(--f-data);border:1px solid var(--line);border-bottom-width:2px
 
   <footer class="foot">
     <span>Arrastra para desplazarte · rueda o <kbd>+</kbd> <kbd>−</kbd> para el zoom · <kbd>←</kbd> <kbd>→</kbd> recorren el historial · <kbd>Esc</kbd> cancela un dibujo</span>
-    <span>Cripto: precios de Binance (pares contra USDT). Forex: precios del mercado de Kraken, que pueden diferir un poco del interbancario. Solo informativo, no es asesoramiento financiero.</span>
+    <span>Cripto: precios de Binance (pares contra USDT). Forex: precios del mercado de Kraken, que pueden diferir un poco del interbancario. Oro, plata, petróleo y USD/JPY: contratos perpetuos de Hyperliquid que siguen esos precios y pueden diferir algo de los futuros oficiales. Solo informativo, no es asesoramiento financiero.</span>
   </footer>
 </div>
 
@@ -278,7 +278,12 @@ const MARKETS = [
   {id:'USDCAD', name:'USD/CAD', label:'Dólar / Dólar canadiense',src:'kraken', k:'ZUSDZCAD', dec:5},
   {id:'AUDUSD', name:'AUD/USD', label:'Dólar australiano / Dólar',src:'kraken', k:'AUDUSD',  dec:5},
   {id:'EURGBP', name:'EUR/GBP', label:'Euro / Libra',            src:'kraken', k:'EURGBP',   dec:5},
-  {id:'EURCHF', name:'EUR/CHF', label:'Euro / Franco suizo',     src:'kraken', k:'EURCHF',   dec:5}
+  {id:'EURCHF', name:'EUR/CHF', label:'Euro / Franco suizo',     src:'kraken', k:'EURCHF',   dec:5},
+  {id:'USDJPY', name:'USD/JPY', label:'Dólar / Yen',             src:'hyper', coin:'xyz:JPY', dec:2, group:'forex'},
+  {id:'XAUUSD', name:'XAU/USD', label:'Oro (onza troy)',         src:'hyper', coin:'xyz:GOLD', dec:2, group:'materias'},
+  {id:'XAGUSD', name:'XAG/USD', label:'Plata (onza troy)',       src:'hyper', coin:'xyz:SILVER', dec:3, group:'materias'},
+  {id:'WTIUSD', name:'WTI/USD', label:'Petróleo WTI (barril)',   src:'hyper', coin:'xyz:CL', dec:3, group:'materias'},
+  {id:'BRENTUSD', name:'BRENT/USD', label:'Petróleo Brent (barril)', src:'hyper', coin:'xyz:BRENTOIL', dec:3, group:'materias'}
 ];
 const TFS = {
   '1m':{s:60, b:'1m', k:1}, '5m':{s:300, b:'5m', k:5}, '15m':{s:900, b:'15m', k:15},
@@ -288,7 +293,11 @@ const BN = 'https://data-api.binance.vision/api/v3/';
 const BWS = 'wss://data-stream.binance.vision/stream?streams=';
 const KR = 'https://api.kraken.com/0/public/';
 const KWS = 'wss://ws.kraken.com/v2';
-const SRC_NAME = {binance:'Binance', kraken:'Kraken'};
+const HL = 'https://api.hyperliquid.xyz/info';
+const HWS = 'wss://api.hyperliquid.xyz/ws';
+const SRC_NAME = {binance:'Binance', kraken:'Kraken', hyper:'Hyperliquid'};
+const GROUPS = [['cripto', 'Cripto'], ['forex', 'Forex'], ['materias', 'Materias primas']];
+const groupOf = m => m.group || (m.src === 'binance' ? 'cripto' : 'forex');
 
 async function getJSON(url){
   const r = await fetch(url, {cache:'no-store'});
@@ -409,7 +418,71 @@ const kraken = {
     return out;
   }
 };
-const PROV = {binance, kraken};
+async function hlPost(body){
+  const r = await fetch(HL, {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body), cache:'no-store'});
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+const hlC = x => ({t:x.t / 1000, o:+x.o, h:+x.h, l:+x.l, c:+x.c, v:+x.v});
+const hlBook = b => ({bids:(b.levels[0] || []).map(l => [+l.px, +l.sz]), asks:(b.levels[1] || []).map(l => [+l.px, +l.sz])});
+const hlTrade = x => ({p:+x.px, s:+x.sz, side:x.side === 'B' ? 'buy' : 'sell', time:x.time, id:'h' + x.tid});
+const hlTicker = x => {
+  if (!x) return null;
+  const last = +x.markPx, prev = +x.prevDayPx;
+  return {last, chg:prev ? (last - prev) / prev * 100 : NaN, hi:NaN, lo:NaN, vol:+x.dayBaseVlm};
+};
+const hyper = {
+  async ctxs(){
+    const [meta, ctx] = await hlPost({type:'metaAndAssetCtxs', dex:'xyz'});
+    const out = {}; meta.universe.forEach((a, i) => { out[a.name] = ctx[i]; });
+    return out;
+  },
+  async history(m, tf){
+    const end = Date.now(), span = TFS[tf].s * 1000 * 1000;
+    const rows = await hlPost({type:'candleSnapshot', req:{coin:m.coin, interval:TFS[tf].b, startTime:end - span, endTime:end}});
+    return rows.map(hlC);
+  },
+  async poll(m, tf, last){
+    const end = Date.now(), start = last ? last.t * 1000 : end - TFS[tf].s * 3000;
+    const [k, b, t, cx] = await Promise.all([
+      hlPost({type:'candleSnapshot', req:{coin:m.coin, interval:TFS[tf].b, startTime:start, endTime:end}}),
+      hlPost({type:'l2Book', coin:m.coin}),
+      hlPost({type:'recentTrades', coin:m.coin}),
+      hyper.ctxs()
+    ]);
+    return {klines:k.map(hlC), book:hlBook(b), trades:t.map(hlTrade), ticker:hlTicker(cx[m.coin])};
+  },
+  stream(m, tf, h){
+    const ws = new WebSocket(HWS);
+    let ping = null;
+    ws.onopen = () => {
+      for (const sub of [
+        {type:'candle', coin:m.coin, interval:TFS[tf].b},
+        {type:'l2Book', coin:m.coin},
+        {type:'trades', coin:m.coin},
+        {type:'activeAssetCtx', coin:m.coin}
+      ]) ws.send(JSON.stringify({method:'subscribe', subscription:sub}));
+      ping = setInterval(() => { try { ws.send('{"method":"ping"}'); } catch(_) {} }, 30000);
+    };
+    ws.addEventListener('close', () => clearInterval(ping));
+    ws.onmessage = e => {
+      let msg; try { msg = JSON.parse(e.data); } catch(_) { return; }
+      const ch = msg.channel, d = msg.data;
+      if (!d) return;
+      if (ch === 'candle'){ h.alive(); h.klines([hlC(d)]); }
+      else if (ch === 'l2Book'){ h.alive(); h.book(hlBook(d)); }
+      else if (ch === 'trades'){ h.alive(); h.trades(d.map(hlTrade)); }
+      else if (ch === 'activeAssetCtx' && d.ctx){ h.alive(); const t = hlTicker(d.ctx); if (t) h.ticker(t); }
+    };
+    return ws;
+  },
+  async watch(list){
+    const cx = await hyper.ctxs(), out = {};
+    for (const m of list){ const t = hlTicker(cx[m.coin]); if (t) out[m.id] = {last:t.last, chg:t.chg}; }
+    return out;
+  }
+};
+const PROV = {binance, kraken, hyper};
 
 /* ---------- estado ---------- */
 const TICKFMT = {};
@@ -728,7 +801,7 @@ function renderHeader(){
   const m = market, base = m.name.split('/')[0];
   $('logo').textContent = base.slice(0, 4);
   $('title').innerHTML = `${esc(base)}<span> / ${esc(m.name.split('/')[1])}</span>`;
-  $('subtitle').textContent = `${m.label} · ${m.src === 'binance' ? 'Cripto' : 'Forex'} · ${SRC_NAME[m.src]}`;
+  $('subtitle').textContent = `${m.label} · ${GROUPS.find(g => g[0] === groupOf(m))[1]} · ${SRC_NAME[m.src]}`;
   document.title = `${m.name} · Atalaya Terminal`;
   const last = candles[candles.length - 1];
   const px = last ? last.c : ticker ? ticker.last : NaN;
@@ -737,6 +810,14 @@ function renderHeader(){
   lastPx = isFinite(px) ? px : null;
   let chg = NaN, hi = NaN, lo = NaN, vol = NaN;
   if (ticker){ hi = ticker.hi; lo = ticker.lo; vol = ticker.vol; chg = isFinite(px) && isFinite(ticker.last) && ticker.last ? ticker.chg : NaN; }
+  if (!isFinite(chg) && watchData[m.id]) chg = watchData[m.id].chg;
+  if (!isFinite(hi) && candles.length){
+    const from = candles[candles.length - 1].t - 86400 + TFS[state.tf].s;
+    for (let i = candles.length - 1; i >= 0 && candles[i].t >= from; i--){
+      hi = isFinite(hi) ? Math.max(hi, candles[i].h) : candles[i].h;
+      lo = isFinite(lo) ? Math.min(lo, candles[i].l) : candles[i].l;
+    }
+  }
   const c = $('chg');
   if (isFinite(chg)){ c.textContent = (chg >= 0 ? '+' : '') + f2(chg) + ' %'; c.className = 'chg ' + (chg >= 0 ? 'up' : 'down'); }
   else { c.textContent = '—'; c.className = 'chg'; }
@@ -768,9 +849,9 @@ function renderTrades(){
 }
 function renderWatch(){
   let html = '';
-  for (const [src, title] of [['binance', 'Cripto · Binance'], ['kraken', 'Forex · Kraken']]){
+  for (const [g, title] of GROUPS){
     html += `<h3>${title}</h3>`;
-    for (const m of MARKETS.filter(m => m.src === src)){
+    for (const m of MARKETS.filter(m => groupOf(m) === g)){
       let w = watchData[m.id];
       if (m === market && candles.length){ w = Object.assign({}, w, {last:candles[candles.length - 1].c}); if (ticker && isFinite(ticker.chg)) w.chg = ticker.chg; }
       const chg = w && isFinite(w.chg) ? w.chg : NaN;
@@ -872,7 +953,7 @@ function connect(){
         mergeKlines(r.klines); addTrades(r.trades); bookData = r.book; if (r.ticker) ticker = r.ticker;
         setStatus('poll'); scheduleSide();
       } catch(_) { if (!c.closed) setStatus('error'); }
-      if (!c.closed) c.pollTimer = setTimeout(run, m.src === 'kraken' ? 5000 : 2500);
+      if (!c.closed) c.pollTimer = setTimeout(run, m.src === 'binance' ? 2500 : m.src === 'hyper' ? 3000 : 5000);
     };
     run();
   };
@@ -900,6 +981,8 @@ async function load(){
   state.drawings = []; state.pending = null; state.offset = 0;
   setStatus('loading'); showMsg(`Cargando ${market.name}…`, false);
   renderHeader(); renderBook(); renderTrades(); renderWatch(); dirty = true;
+  const wl = $('watch'), cur = wl.querySelector('[aria-current="true"]');
+  if (cur && (cur.offsetTop < wl.scrollTop || cur.offsetTop + cur.offsetHeight > wl.scrollTop + wl.clientHeight)) wl.scrollTop = cur.offsetTop - 40;
   try {
     const hist = await PROV[market.src].history(market, state.tf);
     if (token !== loadToken) return;
@@ -1015,7 +1098,8 @@ const initial = MARKETS.find(x => x.id === location.hash.slice(1));
 if (initial) market = initial;
 renderWatch();
 load();
-refreshWatch('binance'); refreshWatch('kraken');
+refreshWatch('binance'); refreshWatch('kraken'); refreshWatch('hyper');
+setInterval(() => refreshWatch('hyper'), 5000);
 setInterval(() => refreshWatch('binance'), 5000);
 setInterval(() => refreshWatch('kraken'), 10000);
 setInterval(() => { dirty = true; }, 1000);

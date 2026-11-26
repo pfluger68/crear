@@ -3,7 +3,7 @@ La idea es crear cosas útiles
 
 ## Atalaya Terminal
 
-Gráficos en vivo de las criptomonedas más conocidas (Binance) y de los principales pares de forex (Kraken), con velas, Heikin Ashi, EMA 20/50, Bollinger, volumen, RSI, líneas de tendencia, libro de órdenes y operaciones recientes.
+Gráficos en vivo de las criptomonedas más conocidas (Binance), los principales pares de forex (Kraken) y oro, plata, petróleo WTI y Brent y USD/JPY (Hyperliquid), con velas, Heikin Ashi, EMA 20/50, Bollinger, volumen, RSI, líneas de tendencia, libro de órdenes y operaciones recientes.
 
 - Código: [`atalaya/index.html`](atalaya/index.html) (un solo archivo, sin dependencias ni claves de API).
 - Para verlo online: en GitHub ve a **Settings → Pages**, elige la rama y la carpeta `/ (root)`, y guarda. Quedará en `https://pfluger68.github.io/crear/atalaya/`.
