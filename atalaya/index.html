@@ -112,7 +112,7 @@ input{font-family:var(--f-data);min-width:0}
 
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:10px;align-items:start}
 .chartbox{position:relative;height:clamp(460px,calc(100vh - 230px),860px);overflow:hidden;min-width:0}
-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:crosshair}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 canvas.grab{cursor:grabbing} canvas.hand{cursor:move} canvas.point{cursor:pointer}
 .legend{position:absolute;top:8px;left:10px;right:96px;display:grid;gap:4px;font:12px/1.3 var(--f-data);font-variant-numeric:tabular-nums;pointer-events:none}
 .lg{display:flex;flex-wrap:wrap;gap:2px 12px;align-items:baseline}
@@ -120,6 +120,8 @@ canvas.grab{cursor:grabbing} canvas.hand{cursor:move} canvas.point{cursor:pointe
 .lg .k{color:var(--muted)}
 .lg .up{color:var(--up)} .lg .down{color:var(--down)}
 .lg .rp{color:var(--sel);font-family:var(--f-ui);font-weight:600}
+.chartctl{position:absolute;left:8px;bottom:34px;display:flex;gap:6px;z-index:2}
+.chartctl button{width:38px;height:38px;padding:0;border-radius:8px;font:600 18px/1 var(--f-ui);background:var(--panel-2);opacity:.92}
 .hint{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);background:var(--label-bg);color:var(--label-fg);font-size:12px;padding:7px 11px;border-radius:6px;pointer-events:none;max-width:calc(100% - 24px);text-align:center}
 .msg{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:12px;text-align:center;padding:24px;background:var(--panel);color:var(--muted);font-size:13px}
 .msg p{margin:0;max-width:40ch}
@@ -342,6 +344,11 @@ kbd{font:11px var(--f-data);border:1px solid var(--line);border-bottom-width:2px
     <section class="chartbox panel">
       <canvas id="cv" tabindex="0" aria-label="Gráfico de precios. Usa las flechas para desplazarte y + o − para el zoom."></canvas>
       <div class="legend" id="legend"></div>
+      <div class="chartctl" aria-label="Zoom del gráfico">
+        <button type="button" id="czOut" aria-label="Alejar">−</button>
+        <button type="button" id="czIn" aria-label="Acercar">+</button>
+        <button type="button" id="czReset" aria-label="Volver a la vista normal" title="Vista normal (también con doble toque)">↺</button>
+      </div>
       <div class="hint" id="hint" hidden></div>
       <div class="msg" id="msg" hidden><p id="msgTxt"></p><button id="retry" hidden>Reintentar</button></div>
     </section>
@@ -700,6 +707,8 @@ const PROV = {binance, kraken, hyper};
 const RIGHT_PAD = 8, AX_B = 26;
 const FONT = '"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace';
 const UIFONT = '"Inter", system-ui, sans-serif';
+const COARSE = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;  // pantalla táctil
+let touchTol = COARSE ? 2.5 : 1;  // multiplica la tolerancia para tocar dibujos con el dedo
 const store = {
   get(k, d){ try { const v = localStorage.getItem('atalaya.' + k); return v == null ? d : JSON.parse(v); } catch(_) { return d; } },
   set(k, v){
@@ -715,7 +724,7 @@ const state = {
   tf: TFS[store.get('tf', '15m')] ? store.get('tf', '15m') : '15m',
   type: store.get('type', 'candles'),
   show: Object.assign({ema20:true, ema50:true, boll:false, piv:false, plan:true, auto:false, vol:true, rsi:true}, store.get('show', {})),
-  barW:9, offset:0, tool:null, pending:null, drawings:[], sel:null, mouse:null, drag:null,
+  barW:9, offset:0, pzoom:1, pshift:0, tool:null, pending:null, drawings:[], sel:null, mouse:null, drag:null,
   replay:{on:false, picking:false, cursor:null, playing:false, timer:null}
 };
 let market = MARKETS[0];
@@ -968,7 +977,7 @@ function drawDrawing(d, selected){
   if (selected){
     for (const a of anchorsOf(d)){
       ctx.fillStyle = C.panel; ctx.strokeStyle = C.sel; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(a.x, a.y, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(a.x, a.y, COARSE ? 8 : 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     }
   }
 }
@@ -984,12 +993,13 @@ function hitTest(m){
   const order = sel ? [sel, ...state.drawings.filter(d => d !== sel).reverse()] : [...state.drawings].reverse();
   for (const d of order){
     const an = anchorsOf(d);
-    for (let k = 0; k < an.length; k++) if (Math.hypot(an[k].x - m.x, an[k].y - m.y) < 8) return {d, anchor:k};
+    for (let k = 0; k < an.length; k++) if (Math.hypot(an[k].x - m.x, an[k].y - m.y) < 8 * touchTol) return {d, anchor:k};
   }
   for (const d of order){
     let hit = false;
-    if (d.type === 'trend') hit = segDist(m.x, m.y, X(d.pts[0].t), Y(d.pts[0].p), X(d.pts[1].t), Y(d.pts[1].p)) < 6;
-    else if (d.type === 'hline') hit = Math.abs(m.y - Y(d.pts[0].p)) < 6;
+    const tol = 6 * touchTol;
+    if (d.type === 'trend') hit = segDist(m.x, m.y, X(d.pts[0].t), Y(d.pts[0].p), X(d.pts[1].t), Y(d.pts[1].p)) < tol;
+    else if (d.type === 'hline') hit = Math.abs(m.y - Y(d.pts[0].p)) < tol;
     else if (d.type === 'zbuy' || d.type === 'zsell'){
       const xs = [X(d.pts[0].t), X(d.pts[1].t)], ys = [Y(d.pts[0].p), Y(d.pts[1].p)];
       hit = m.x >= Math.min(...xs) - 4 && m.x <= Math.max(...xs) + 4 && m.y >= Math.min(...ys) - 4 && m.y <= Math.max(...ys) + 4;
@@ -1055,10 +1065,14 @@ function render(){
     for (const p of lv) if (Math.abs(p - ref) / ref < 0.02){ lo = Math.min(lo, p); hi = Math.max(hi, p); }
   }
   if (hi - lo < hi * 1e-6){ const pad = Math.max(hi * 1e-4, 1e-9); hi += pad; lo -= pad; }
+  if (state.pzoom !== 1 || state.pshift){
+    const mid = (hi + lo) / 2 + state.pshift, half = (hi - lo) / 2 * state.pzoom;
+    hi = mid + half; lo = mid - half;
+  }
   const pTop = Math.max(50, $('legend').offsetHeight + 18), pBot = mainH * (state.show.vol ? 0.8 : 0.93);
   const Y = p => pTop + (hi - p) / (hi - lo) * (pBot - pTop);
   const P = y => hi - (y - pTop) / (pBot - pTop) * (hi - lo);
-  view = {X, I, Y, P, plotW, axR, mainH, rsiH, total, n, cs, data, e20, e50, bb, rs};
+  view = {X, I, Y, P, plotW, axR, mainH, rsiH, total, n, cs, data, e20, e50, bb, rs, ppp:(hi - lo) / (pBot - pTop)};
 
   let bodyW = Math.max(1, Math.floor(bw * 0.72)); if (bodyW > 2 && bodyW % 2 === 0) bodyW--;
   const half = (bodyW - 1) / 2;
@@ -1626,7 +1640,7 @@ async function load(){
   disconnect(); stopReplay(true);
   candles = []; trades = []; tradeIds = new Set(); bookData = null; ticker = null; lastPx = null;
   older = {loading:false, done:false, failAt:0, told:false};
-  state.drawings = store.get('draw.' + market.id, []); state.sel = null; state.pending = null; state.offset = 0;
+  state.drawings = store.get('draw.' + market.id, []); state.sel = null; state.pending = null; state.offset = 0; state.pzoom = 1; state.pshift = 0;
   plan = plans[market.id] || null;
   $('qty').value = ''; $('sl').value = ''; $('tp').value = ''; simError('');
   setStatus('loading'); showMsg(`Cargando ${market.name}…`, false);
@@ -1775,7 +1789,7 @@ document.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click'
 $('del').addEventListener('click', deleteSelected);
 $('zin').addEventListener('click', () => view && zoomAt(view.plotW, 1.25));
 $('zout').addEventListener('click', () => view && zoomAt(view.plotW, 1 / 1.25));
-$('end').addEventListener('click', () => { state.offset = 0; dirty = true; });
+$('end').addEventListener('click', () => { state.offset = 0; state.pshift = 0; dirty = true; });
 $('retry').addEventListener('click', load);
 $('watch').addEventListener('click', e => { const b = e.target.closest('.wrow'); if (b) selectMarket(b.dataset.id); });
 window.addEventListener('hashchange', () => selectMarket(location.hash.slice(1), true));
@@ -1876,8 +1890,24 @@ $('simReset').addEventListener('click', () => {
 });
 
 const pos = e => { const r = cv.getBoundingClientRect(); return {x:e.clientX - r.left, y:e.clientY - r.top}; };
+const ptrs = new Map();
+let pinch = null, lastTap = {t:0, x:0, y:0}, moved = false;
+function resetView(){ state.barW = 9; state.offset = 0; state.pzoom = 1; state.pshift = 0; dirty = true; }
+function startPinch(){
+  const [a, b] = [...ptrs.values()];
+  const mx = (a.x + b.x) / 2;
+  pinch = {d0:Math.max(20, Math.hypot(a.x - b.x, a.y - b.y)), dy0:Math.max(20, Math.abs(a.y - b.y)), bw0:state.barW, pz0:state.pzoom, i0:view.I(mx)};
+  state.drag = null; state.pending = state.pending; cv.classList.remove('grab', 'hand');
+}
 cv.addEventListener('pointerdown', e => {
   const m = pos(e); state.mouse = m; if (!view) return;
+  touchTol = e.pointerType === 'touch' ? 2.5 : e.pointerType === 'pen' ? 1.6 : 1;
+  ptrs.set(e.pointerId, m); moved = false;
+  try { cv.setPointerCapture(e.pointerId); } catch(_) {}
+  if (ptrs.size === 2){ startPinch(); return; }
+  if (ptrs.size > 2) return;
+  // eje de precios: arrastrar arriba/abajo estira o achica la escala
+  if (m.x >= view.plotW && m.y < view.mainH){ state.drag = {kind:'yscale', y:m.y, pz0:state.pzoom}; return; }
   const inMain = m.x < view.plotW && m.y < view.mainH;
   if (state.replay.picking && inMain){
     const i = Math.round(view.I(m.x));
@@ -1891,7 +1921,8 @@ cv.addEventListener('pointerdown', e => {
     const pt = ptAt(m), t = state.tool;
     if (t === 'hline'){ addDrawing({type:'hline', pts:[{t:pt.t, p:pt.p}]}); }
     else if (t === 'long' || t === 'short'){
-      const span = (view.P(0) - view.P(view.mainH)) * 0.06, sign = t === 'long' ? 1 : -1;
+      // separación inicial cómoda para el dedo: al menos ~45 px entre la entrada y el stop
+      const span = Math.max((view.P(0) - view.P(view.mainH)) * 0.06, view.ppp * 45), sign = t === 'long' ? 1 : -1;
       const tEnd = iToT(view.I(m.x) + Math.max(15, 120 / state.barW));
       addDrawing({type:t, pts:[{t:pt.t, p:pt.p}, {t:tEnd, p:pt.p + sign * span * 2}, {t:tEnd, p:pt.p - sign * span}]});
     }
@@ -1906,17 +1937,31 @@ cv.addEventListener('pointerdown', e => {
     cv.classList.add('hand');
   } else {
     if (state.sel){ state.sel = null; renderSim(); }
-    state.drag = {kind:'pan', x:m.x, off:state.offset};
+    state.drag = {kind:'pan', x:m.x, y:m.y, off:state.offset, ps0:state.pshift, ppp:view.ppp};
     cv.classList.add('grab');
   }
-  try { cv.setPointerCapture(e.pointerId); } catch(_) {}
   dirty = true;
 });
 cv.addEventListener('pointermove', e => {
-  const m = pos(e); state.mouse = m;
+  const m = pos(e);
+  if (ptrs.has(e.pointerId)){ const p0 = ptrs.get(e.pointerId); if (Math.hypot(p0.x - m.x, p0.y - m.y) > 6) moved = true; ptrs.set(e.pointerId, m); }
+  if (pinch && ptrs.size >= 2 && view){
+    const [a, b] = [...ptrs.values()];
+    const mx = (a.x + b.x) / 2, d = Math.max(20, Math.hypot(a.x - b.x, a.y - b.y));
+    state.barW = Math.min(40, Math.max(1.5, pinch.bw0 * d / pinch.d0));
+    const rightIdx = pinch.i0 - 0.5 + (view.plotW - mx) / state.barW;
+    state.offset = seriesLen() - 1 + RIGHT_PAD - rightIdx;
+    dirty = true; return;
+  }
+  state.mouse = m;
   const dg = state.drag;
   if (dg && view){
-    if (dg.kind === 'pan') state.offset = dg.off + (m.x - dg.x) / state.barW;
+    if (dg.kind === 'yscale') state.pzoom = Math.min(10, Math.max(0.15, dg.pz0 * Math.exp((m.y - dg.y) / 160)));
+    else if (dg.kind === 'pan'){
+      state.offset = dg.off + (m.x - dg.x) / state.barW;
+      // con la escala de precios ajustada a mano, arrastrar también mueve arriba/abajo
+      if (state.pzoom !== 1 || state.pshift) state.pshift = dg.ps0 + (m.y - dg.y) * dg.ppp;
+    }
     else if (dg.kind === 'move'){
       const di = view.I(m.x) - dg.i0, dp = view.P(m.y) - dg.p0;
       dg.d.pts = dg.orig.map(p => ({t:iToT(tToI(p.t) + di), p:p.p + dp}));
@@ -1936,14 +1981,28 @@ cv.addEventListener('pointermove', e => {
   }
   dirty = true;
 });
-const endDrag = () => {
-  const dg = state.drag; if (!dg) return;
-  state.drag = null; cv.classList.remove('grab', 'hand');
-  if (dg.kind !== 'pan') saveDrawings();
-  dirty = true;
+const endDrag = e => {
+  const m = e && pos(e);
+  if (e) ptrs.delete(e.pointerId);
+  if (pinch){ if (ptrs.size < 2) pinch = null; dirty = true; return; }
+  const dg = state.drag;
+  if (dg){
+    state.drag = null; cv.classList.remove('grab', 'hand');
+    if (dg.kind === 'anchor' || dg.kind === 'move') saveDrawings();
+    dirty = true;
+  }
+  // doble toque (o doble clic) en el gráfico sin moverse: vista normal
+  if (e && e.type === 'pointerup' && !moved && dg && (dg.kind === 'pan' || dg.kind === 'yscale')){
+    const now = Date.now();
+    if (now - lastTap.t < 320 && Math.hypot(m.x - lastTap.x, m.y - lastTap.y) < 30){ resetView(); lastTap.t = 0; }
+    else lastTap = {t:now, x:m.x, y:m.y};
+  }
 };
 cv.addEventListener('pointerup', endDrag);
 cv.addEventListener('pointercancel', endDrag);
+$('czIn').addEventListener('click', () => view && zoomAt(view.plotW * 0.7, 1.3));
+$('czOut').addEventListener('click', () => view && zoomAt(view.plotW * 0.7, 1 / 1.3));
+$('czReset').addEventListener('click', resetView);
 cv.addEventListener('pointerleave', () => { if (!state.drag){ state.mouse = null; dirty = true; } });
 cv.addEventListener('wheel', e => {
   e.preventDefault();
