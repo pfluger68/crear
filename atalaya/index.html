@@ -201,6 +201,20 @@ h2{font:600 11px/1 var(--f-display);text-transform:uppercase;letter-spacing:.09e
 .arow{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center;padding:7px 8px;border-radius:6px;background:var(--panel-2);margin-bottom:6px;font:12px/1.3 var(--f-data)}
 .arow small{color:var(--muted);font-family:var(--f-ui);grid-column:1/-1}
 .arow button{padding:5px 8px;font-size:11.5px}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--fg);padding:0;width:min(520px,calc(100% - 32px));max-height:calc(100% - 40px)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.dlg{padding:16px;display:grid;gap:10px}
+.dlg h2{margin:0;font:600 15px var(--f-display);text-transform:none;letter-spacing:0;color:var(--fg)}
+.dlg h3{margin:6px 0 0;font:600 12.5px var(--f-ui)}
+.dlg-p{margin:0;font-size:13px;line-height:1.45;color:var(--muted)}
+.dlg-p b{color:var(--fg)}
+.dlg-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.dlg-row input[type=password]{flex:1;min-width:180px}
+.dlg-help{font-size:12.5px;color:var(--muted);background:var(--panel-2);border-radius:6px;padding:8px}
+.dlg-help ol{margin:6px 0 0;padding-left:18px;display:grid;gap:4px}
+.filebtn{position:relative;overflow:hidden;font:500 12.5px var(--f-ui);background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:7px 10px;cursor:pointer}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .foot{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--muted);padding:2px 4px}
 kbd{font:11px var(--f-data);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--panel)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -316,6 +330,7 @@ kbd{font:11px var(--f-data);border:1px solid var(--line);border-bottom-width:2px
       <button id="zout" aria-label="Alejar">−</button>
       <button id="zin" aria-label="Acercar">+</button>
       <button id="end">Ir al último</button>
+      <button id="dataBtn" title="Copia de seguridad y sincronización de tus dibujos, alertas y simulador">💾 Mis datos</button>
     </div>
   </div>
 
@@ -418,6 +433,33 @@ kbd{font:11px var(--f-data);border:1px solid var(--line);border-bottom-width:2px
   </footer>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
+<dialog id="dataDlg" aria-labelledby="dataTitle">
+  <form method="dialog" class="dlg">
+    <div class="dlg-head"><h2 id="dataTitle">Mis datos</h2><button value="close" aria-label="Cerrar">✕</button></div>
+    <p class="dlg-p">Tus dibujos, alertas, cuenta del simulador y ajustes se guardan solos en este navegador. Para no perderlos si cambias de dispositivo o se borran los datos de Safari, haz una copia o sincroniza con GitHub. Tu clave de API de Claude nunca se copia.</p>
+    <p class="dlg-p" id="dataSummary"></p>
+    <h3>Copia en un archivo</h3>
+    <div class="dlg-row">
+      <button type="button" id="expBtn">Descargar copia</button>
+      <label class="filebtn">Restaurar desde archivo<input type="file" id="impFile" accept="application/json,.json"></label>
+    </div>
+    <h3>Sincronización automática con GitHub</h3>
+    <p class="dlg-p">Guarda todo en un <b>gist privado</b> de tu cuenta de GitHub cada vez que cambias algo. En otro dispositivo pones el mismo token y lo recupera solo.</p>
+    <details class="dlg-help"><summary>Cómo crear el token (2 minutos)</summary>
+      <ol>
+        <li>En GitHub: <b>Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token (classic)</b>.</li>
+        <li>Nombre: "Atalaya". Vencimiento: el que prefieras. Marca <b>solo</b> el permiso <b>gist</b>.</li>
+        <li>Genera, copia el token (empieza con <code>ghp_</code>) y pégalo aquí. Se guarda solo en este navegador.</li>
+      </ol>
+    </details>
+    <div class="dlg-row"><input type="password" id="syncTok" placeholder="ghp_…" autocomplete="off"><button type="button" id="syncSave">Activar</button></div>
+    <p class="dlg-p" id="syncStatus"></p>
+    <div class="dlg-row" id="syncActions" hidden>
+      <button type="button" id="syncNow">Sincronizar ahora</button>
+      <button type="button" id="syncOff" class="link">Desactivar en este dispositivo</button>
+    </div>
+  </form>
+</dialog>
 
 <script>
 (() => {
@@ -656,8 +698,15 @@ const FONT = '"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace';
 const UIFONT = '"Inter", system-ui, sans-serif';
 const store = {
   get(k, d){ try { const v = localStorage.getItem('atalaya.' + k); return v == null ? d : JSON.parse(v); } catch(_) { return d; } },
-  set(k, v){ try { localStorage.setItem('atalaya.' + k, JSON.stringify(v)); } catch(_) {} }
+  set(k, v){
+    try {
+      localStorage.setItem('atalaya.' + k, JSON.stringify(v));
+      if (!NO_SYNC.has('atalaya.' + k)){ localStorage.setItem('atalaya.meta.updatedAt', String(Date.now())); if (typeof scheduleSync === 'function') scheduleSync(); }
+    } catch(_) {}
+  }
 };
+// Claves que nunca se copian ni se sincronizan (secretos y datos de la propia sincronización)
+const NO_SYNC = new Set(['atalaya.aiKey', 'atalaya.sync.token', 'atalaya.sync.gist', 'atalaya.sync.last', 'atalaya.meta.updatedAt']);
 const state = {
   tf: TFS[store.get('tf', '15m')] ? store.get('tf', '15m') : '15m',
   type: store.get('type', 'candles'),
@@ -1730,6 +1779,32 @@ document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click
   document.querySelectorAll('.tabs button').forEach(x => { x.setAttribute('aria-selected', x === b); $(x.dataset.pane).hidden = x !== b; });
   store.set('tab', b.dataset.pane);
 }));
+$('dataBtn').addEventListener('click', openData);
+$('expBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(snapshot(), null, 1)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `atalaya-copia-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast('Copia descargada. Guárdala en Archivos, iCloud o Drive.');
+});
+$('impFile').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try {
+    const snap = JSON.parse(await f.text());
+    if (!window.confirm('¿Reemplazar los datos de este navegador por los de la copia? Se recargará la página.')) return;
+    restore(snap); localStorage.setItem('atalaya.meta.updatedAt', String(Date.now())); location.reload();
+  } catch(err) { toast(err.message || 'No se pudo leer el archivo.'); }
+  finally { e.target.value = ''; }
+});
+$('syncSave').addEventListener('click', async () => {
+  const t = $('syncTok').value.trim();
+  if (!/^(ghp_|github_pat_)/.test(t)){ syncStatus('Ese no parece un token de GitHub (empieza con ghp_ o github_pat_).', true); return; }
+  localStorage.setItem('atalaya.sync.token', t); localStorage.removeItem('atalaya.sync.gist'); $('syncTok').value = '';
+  syncStatus('Conectando con GitHub…');
+  await pullOnStart();
+});
+$('syncNow').addEventListener('click', async () => { syncStatus('Sincronizando…'); try { await pushRemote(); syncStatus(); } catch(e) { syncStatus(e.message, true); } });
+$('syncOff').addEventListener('click', () => { ['atalaya.sync.token', 'atalaya.sync.gist', 'atalaya.sync.last'].forEach(k => localStorage.removeItem(k)); syncStatus(); toast('Sincronización desactivada en este dispositivo. Tu copia en GitHub sigue ahí.'); });
 $('aiRun').addEventListener('click', runAI);
 $('aiTop').addEventListener('click', runAI);
 $('aiCopy').addEventListener('click', copyAI);
@@ -2207,6 +2282,101 @@ function drawAI(){
   toast('Dibujé las zonas y operaciones de Claude. Puedes moverlas o borrarlas como cualquier dibujo.');
 }
 
+/* ================= mis datos: copia y sincronización ================= */
+const SYNC_DESC = 'Atalaya · copia de seguridad (no editar a mano)', SYNC_FILE = 'atalaya.json';
+let syncTimer = null, syncing = false;
+function snapshot(){
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++){
+    const k = localStorage.key(i);
+    if (k && k.startsWith('atalaya.') && !NO_SYNC.has(k)) data[k] = localStorage.getItem(k);
+  }
+  return {app:'atalaya', version:1, updatedAt:+(localStorage.getItem('atalaya.meta.updatedAt') || 0), savedAt:Date.now(), data};
+}
+function restore(snap){
+  if (!snap || snap.app !== 'atalaya' || typeof snap.data !== 'object') throw new Error('El archivo no es una copia de Atalaya.');
+  for (let i = localStorage.length - 1; i >= 0; i--){ const k = localStorage.key(i); if (k && k.startsWith('atalaya.') && !NO_SYNC.has(k)) localStorage.removeItem(k); }
+  for (const [k, v] of Object.entries(snap.data)) if (k.startsWith('atalaya.') && !NO_SYNC.has(k) && typeof v === 'string') localStorage.setItem(k, v);
+  localStorage.setItem('atalaya.meta.updatedAt', String(snap.updatedAt || Date.now()));
+}
+function dataSummary(){
+  let dib = 0, merc = 0;
+  for (let i = 0; i < localStorage.length; i++){
+    const k = localStorage.key(i);
+    if (k && k.startsWith('atalaya.draw.')){ try { const n = JSON.parse(localStorage.getItem(k)).length; if (n){ dib += n; merc++; } } catch(_) {} }
+  }
+  const u = +(localStorage.getItem('atalaya.meta.updatedAt') || 0);
+  return `En este navegador: ${dib} dibujos en ${merc} mercados, ${alerts.list.filter(a => a.on).length} alertas activas, ${sim.history.length} operaciones simuladas${u ? ` · último cambio ${new Intl.DateTimeFormat('es-AR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}).format(new Date(u))}` : ''}.`;
+}
+async function gh(path, opts){
+  const tok = localStorage.getItem('atalaya.sync.token');
+  const r = await fetch('https://api.github.com' + path, Object.assign({cache:'no-store'}, opts, {headers:Object.assign({'Accept':'application/vnd.github+json', 'Authorization':'Bearer ' + tok}, opts && opts.body ? {'Content-Type':'application/json'} : {})}));
+  if (r.status === 401) throw new Error('GitHub no aceptó el token. Revisa que esté bien copiado y que tenga el permiso "gist".');
+  if (r.status === 403 || r.status === 404) throw new Error(`GitHub rechazó la operación (${r.status}). Revisa que el token tenga el permiso "gist".`);
+  if (!r.ok) throw new Error('GitHub respondió con un error ' + r.status + '.');
+  return r.json();
+}
+async function findGist(){
+  let id = localStorage.getItem('atalaya.sync.gist');
+  if (id) return id;
+  for (let page = 1; page <= 5; page++){
+    const list = await gh(`/gists?per_page=100&page=${page}`);
+    const g = list.find(x => x.description === SYNC_DESC && x.files && x.files[SYNC_FILE]);
+    if (g){ localStorage.setItem('atalaya.sync.gist', g.id); return g.id; }
+    if (list.length < 100) break;
+  }
+  return null;
+}
+async function readRemote(id){
+  const g = await gh('/gists/' + id), f = g.files && g.files[SYNC_FILE];
+  if (!f) return null;
+  let txt = f.content;
+  if (f.truncated){ const r = await fetch(f.raw_url, {cache:'no-store'}); txt = await r.text(); }
+  return JSON.parse(txt);
+}
+async function pushRemote(){
+  const body = JSON.stringify({files:{[SYNC_FILE]:{content:JSON.stringify(snapshot())}}});
+  let id = await findGist();
+  if (id) await gh('/gists/' + id, {method:'PATCH', body});
+  else { const g = await gh('/gists', {method:'POST', body:JSON.stringify({description:SYNC_DESC, public:false, files:{[SYNC_FILE]:{content:JSON.stringify(snapshot())}}})}); localStorage.setItem('atalaya.sync.gist', g.id); }
+  localStorage.setItem('atalaya.sync.last', String(Date.now()));
+}
+function syncStatus(text, err){
+  const el = $('syncStatus'); if (!el) return;
+  const on = !!localStorage.getItem('atalaya.sync.token');
+  const last = +(localStorage.getItem('atalaya.sync.last') || 0);
+  el.innerHTML = text ? `<span class="${err ? 'down-t' : ''}">${esc(text)}</span>` : on
+    ? `Sincronización activa ✓${last ? ' · última copia ' + new Intl.DateTimeFormat('es-AR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}).format(new Date(last)) : ''}`
+    : 'Sincronización desactivada en este dispositivo.';
+  $('syncActions').hidden = !on;
+}
+function scheduleSync(){
+  if (!localStorage.getItem('atalaya.sync.token')) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(async () => {
+    if (syncing) return scheduleSync();
+    syncing = true;
+    try { await pushRemote(); syncStatus(); } catch(e) { syncStatus(e.message, true); }
+    finally { syncing = false; }
+  }, 4000);
+}
+// Al abrir: si la copia de GitHub es más reciente que este navegador, la trae (una vez por carga).
+async function pullOnStart(){
+  if (!localStorage.getItem('atalaya.sync.token')) return;
+  try {
+    const id = await findGist(); if (!id){ await pushRemote(); syncStatus(); return; }
+    const remote = await readRemote(id);
+    const local = +(localStorage.getItem('atalaya.meta.updatedAt') || 0);
+    if (remote && remote.updatedAt > local && !sessionStorage.getItem('atalaya.pulled')){
+      sessionStorage.setItem('atalaya.pulled', '1');
+      restore(remote); location.reload(); return;
+    }
+    if (!remote || local > remote.updatedAt) await pushRemote();
+    syncStatus();
+  } catch(e) { syncStatus(e.message, true); }
+}
+function openData(){ $('dataSummary').textContent = dataSummary(); syncStatus(); $('dataDlg').showModal(); }
+
 /* ================= arranque ================= */
 readColors();
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors);
@@ -2219,7 +2389,7 @@ resize();
 const initial = MARKETS.find(x => x.id === location.hash.slice(1));
 if (initial) market = initial;
 if (state.tf === '1M' && PROV[market.src].noMonthly) state.tf = '1S';
-setPressed(); renderWatch(); renderSim(); renderAlerts(); setAIKeyUI();
+setPressed(); renderWatch(); renderSim(); renderAlerts(); setAIKeyUI(); pullOnStart();
 load();
 setInterval(() => { if (Date.now() - (mtf ? mtf.at : 0) > 15 * 60 * 1000) loadMTF(true).catch(() => {}); }, 60 * 1000);
 refreshWatch('binance'); refreshWatch('kraken'); refreshWatch('hyper'); loadPlan();
