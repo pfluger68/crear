@@ -3,11 +3,14 @@ La idea es crear cosas útiles
 
 ## Atalaya Terminal
 
-Gráficos en vivo de las criptomonedas más conocidas (Binance), los principales pares de forex (Kraken) y oro, plata, petróleo WTI y Brent y USD/JPY (Hyperliquid), con velas, Heikin Ashi, EMA 20/50, Bollinger, volumen, RSI, líneas de tendencia, libro de órdenes y operaciones recientes.
+Plataforma de gráficos en vivo para cripto (Binance), forex (Kraken) y oro, plata, petróleo WTI/Brent y USD/JPY (Hyperliquid). PAXG/USDT da historial de oro desde 2020.
 
-- Código: [`atalaya/index.html`](atalaya/index.html) (un solo archivo, sin dependencias ni claves de API).
-- Para verlo online: en GitHub ve a **Settings → Pages**, elige la rama y la carpeta `/ (root)`, y guarda. Quedará en `https://pfluger68.github.io/crear/atalaya/`.
-- También funciona abriendo el archivo directamente en el navegador.
-- Puedes enlazar un mercado concreto con `#`, por ejemplo `.../atalaya/#ETHUSDT` o `.../atalaya/#EURUSD`.
+- **Gráfico:** velas, Heikin Ashi, línea y área, de 1 minuto a 1 mes. Historial que se carga solo al desplazarte hacia atrás, e "Ir a fecha".
+- **Indicadores:** EMA 20/50, Bollinger, pivotes diarios (P, R1/R2, S1/S2, máximo y mínimo del día anterior), volumen y RSI.
+- **Dibujo:** tendencia, horizontal, zona de compra, zona de venta, Fibonacci y posición larga o corta con stop, objetivo, riesgo/beneficio y resultado. Se seleccionan, se mueven, se borran y quedan guardados por mercado en tu navegador.
+- **Repetición:** eliges una vela del pasado, se oculta lo que vino después y avanzas vela por vela para practicar.
+- **Simulador:** cuenta ficticia de 10.000 USD, compras y ventas con stop loss y take profit, cálculo de cantidad según el riesgo, e historial con estadísticas. Funciona en vivo y en repetición.
+
+Código: [`atalaya/index.html`](atalaya/index.html), un solo archivo, sin dependencias ni claves de API. Para verlo online: en GitHub, **Settings → Pages**, elige la rama y la carpeta `/ (root)`. Queda en `https://pfluger68.github.io/crear/atalaya/` (por ejemplo `.../atalaya/#XAUUSD`).
 
 Solo informativo, no es asesoramiento financiero.
