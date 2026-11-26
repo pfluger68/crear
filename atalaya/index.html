@@ -274,7 +274,7 @@ kbd{font:11px var(--f-data);border:1px solid var(--line);border-bottom-width:2px
       <button class="chip" data-ind="ema50"><span class="sw" style="background:var(--ema2)"></span>EMA 50</button>
       <button class="chip" data-ind="boll"><span class="sw" style="background:var(--boll)"></span>Bollinger</button>
       <button class="chip" data-ind="piv" title="Pivotes diarios y máximo/mínimo del día anterior (en temporalidades menores a 1D)"><span class="sw" style="background:var(--piv)"></span>Pivotes</button>
-      <button class="chip" data-ind="plan" title="Plan del día del oro generado por la investigación diaria (solo XAU/USD)"><span class="sw" style="background:var(--sel)"></span>Plan IA</button>
+      <button class="chip" data-ind="plan" title="Plan del día generado por la investigación diaria (XAU/USD y BTC/USDT)"><span class="sw" style="background:var(--sel)"></span>Plan IA</button>
       <button class="chip" data-ind="auto" title="Zonas de soporte y resistencia calculadas automáticamente (niveles de 1D, 4H y 1H que coinciden)"><span class="sw" style="background:var(--accent)"></span>Zonas auto</button>
       <button class="chip" data-ind="vol"><span class="sw" style="background:var(--muted)"></span>Volumen</button>
       <button class="chip" data-ind="rsi"><span class="sw" style="background:var(--rsi)"></span>RSI</button>
@@ -389,7 +389,7 @@ kbd{font:11px var(--f-data);border:1px solid var(--line);border-bottom-width:2px
           </div>
           <button type="button" id="alFromSel" class="full" style="width:100%;margin-bottom:8px">Alerta en el dibujo seleccionado</button>
           <label class="toggle"><input type="checkbox" id="alAuto"> Avisar al entrar en zonas automáticas</label>
-          <label class="toggle"><input type="checkbox" id="alPlan"> Avisar al entrar en zonas del Plan IA (oro)</label>
+          <label class="toggle"><input type="checkbox" id="alPlan"> Avisar al entrar en zonas del Plan IA (oro y BTC)</label>
           <button type="button" id="alNotif" class="link">Activar notificaciones del sistema</button>
           <p class="aiintro" style="margin-top:6px">Las alertas funcionan mientras Atalaya esté abierta (puede estar en otra pestaña). Suenan, vibran en el móvil y muestran una notificación si la activas.</p>
           <h3 class="simh">Activas</h3>
@@ -668,9 +668,12 @@ let market = MARKETS[0];
 let candles = [], trades = [], tradeIds = new Set(), bookData = null, ticker = null, watchData = {};
 let dirty = true, view = null, conn = null, loadToken = 0, lastPx = null, lastDir = 'up';
 let older = {loading:false, done:false, failAt:0, told:false};
-let plan = null;
+let plan = null, plans = {};
 async function loadPlan(){
-  try { const r = await fetch('plan-oro.json', {cache:'no-store'}); if (r.ok){ plan = await r.json(); dirty = true; } } catch(_) {}
+  for (const f of ['plan-oro.json', 'plan-btc.json']){
+    try { const r = await fetch(f, {cache:'no-store'}); if (r.ok){ const p = await r.json(); plans[p.mercado] = p; } } catch(_) {}
+  }
+  plan = plans[market.id] || null; dirty = true;
 }
 let W = 0, H = 0, dpr = 1, C = {};
 const $ = id => document.getElementById(id);
@@ -1570,6 +1573,7 @@ async function load(){
   candles = []; trades = []; tradeIds = new Set(); bookData = null; ticker = null; lastPx = null;
   older = {loading:false, done:false, failAt:0, told:false};
   state.drawings = store.get('draw.' + market.id, []); state.sel = null; state.pending = null; state.offset = 0;
+  plan = plans[market.id] || null;
   $('qty').value = ''; $('sl').value = ''; $('tp').value = ''; simError('');
   setStatus('loading'); showMsg(`Cargando ${market.name}…`, false);
   renderHeader(); renderBook(); renderTrades(); renderWatch(); renderSim(); setPressed(); dirty = true;
@@ -1992,7 +1996,8 @@ function onPrice(id, px){
     }
   }
   if (changed){ saveAlerts(); dirty = true; }
-  if (alerts.plan && plan && id === plan.mercado) zonesCheck(plan.zonas, 'la zona del Plan IA', m, prev, px, 'plan' + plan.fecha);
+  const pl = plans[id];
+  if (alerts.plan && pl) zonesCheck(pl.zonas, 'la zona del Plan IA', m, prev, px, 'plan' + pl.fecha);
   if (alerts.auto && autoZ && autoZ.mkt === id) zonesCheck(autoZ.zonas, 'la zona automática', m, prev, px, 'auto');
 }
 function addAlert(a){

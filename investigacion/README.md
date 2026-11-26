@@ -1,4 +1,4 @@
-# Investigación diaria del oro
+# Investigación diaria del oro y de BTC
 
 Programa de investigación continua para encontrar patrones del oro que se sostengan con datos, y para producir cada mañana un plan operativo que Atalaya dibuja en el gráfico (botón **Plan IA** en XAU/USD).
 
@@ -34,4 +34,13 @@ Programa de investigación continua para encontrar patrones del oro que se soste
 - "Prometedora" exige el mismo sentido en ambos tramos: p < 0,05 en la muestra y p < 0,01 en la validación, después de costos, con al menos 30 operaciones en cada tramo.
 - Ninguna idea pasa a "hallazgo firme" sin al menos 30 casos nuevos en `seguimiento.json`.
 - Cuantas más ideas se prueban, más probable es encontrar una que funcione por azar: llevar la cuenta en `hipotesis.json` y ser más exigente a medida que crece.
+- Mirar siempre la media bruta (antes de costos) además de la neta, y probar la señal invertida antes de afirmar que "lo contrario funciona".
 - Nada de esto es asesoramiento financiero.
+
+## BTC
+
+BTC tiene su propia memoria en `btc/`: `btc/CONOCIMIENTO.md`, `btc/hipotesis.json`, `btc/seguimiento.json`, `btc/hipotesis/` y `btc/diario/`.
+
+- En los scripts, llamar `motor.usar('btc')` al principio.
+- Costo supuesto: 10 pb por operación (perpetuo con comisión taker). Muestra: 2019 → junio 2024.
+- Datos: `python3 investigacion/datos.py btc`. Plan: `python3 investigacion/plan_diario.py btc` (genera `atalaya/plan-btc.json`).

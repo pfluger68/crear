@@ -1,0 +1,427 @@
+{
+ "hipotesis": [
+  {
+   "id": "B001",
+   "nombre": "Ritmo horario y semanal de BTC",
+   "idea": "Movimiento medio y volatilidad por hora UTC y día.",
+   "estado": "descriptivo",
+   "codigo": "btc/hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "tipo": "descriptivo",
+    "tabla": {
+     "por_hora": {
+      "media_pb": {
+       "0": 1.51,
+       "1": -1.09,
+       "2": -1.51,
+       "3": -1.15,
+       "4": -1.02,
+       "5": 0.53,
+       "6": 0.75,
+       "7": 0.55,
+       "8": 1.01,
+       "9": 0.14,
+       "10": 0.14,
+       "11": 0.9,
+       "12": 0.69,
+       "13": 1.35,
+       "14": -1.65,
+       "15": 2.15,
+       "16": -0.54,
+       "17": 0.44,
+       "18": -0.1,
+       "19": 0.2,
+       "20": 1.64,
+       "21": 4.2,
+       "22": 3.23,
+       "23": -2.69
+      },
+      "vol_pb": {
+       "0": 44.6,
+       "1": 40.6,
+       "2": 36.0,
+       "3": 33.2,
+       "4": 31.0,
+       "5": 31.2,
+       "6": 32.4,
+       "7": 33.9,
+       "8": 37.4,
+       "9": 34.3,
+       "10": 34.7,
+       "11": 34.4,
+       "12": 41.1,
+       "13": 46.1,
+       "14": 53.9,
+       "15": 50.2,
+       "16": 44.9,
+       "17": 41.4,
+       "18": 39.5,
+       "19": 39.0,
+       "20": 41.7,
+       "21": 39.2,
+       "22": 38.6,
+       "23": 38.0
+      }
+     },
+     "por_dia": {
+      "media_pb": {
+       "0": 1.59,
+       "1": -0.12,
+       "2": 1.72,
+       "3": -1.55,
+       "4": 0.72,
+       "5": 0.3,
+       "6": 0.16
+      },
+      "vol_pb": {
+       "0": 43.9,
+       "1": 41.9,
+       "2": 42.8,
+       "3": 42.0,
+       "4": 42.2,
+       "5": 28.2,
+       "6": 32.4
+      }
+     }
+    }
+   },
+   "nota": ""
+  },
+  {
+   "id": "B002",
+   "nombre": "Ruptura del rango asiático en Londres",
+   "idea": "Cierre de 1 h fuera del rango 00-07 UTC entre 07 y 11 UTC -> sigue 4 h.",
+   "estado": "rechazada",
+   "codigo": "btc/hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 4,
+    "costo_pb": 10.0,
+    "muestra": {
+     "n": 997,
+     "media_pb": -12.29,
+     "aciertos_pct": 39.0,
+     "total_pct": -122.56,
+     "t": -2.49,
+     "p": 0.0127,
+     "factor_beneficio": 0.77,
+     "media_bruta_pb": -2.29
+    },
+    "validacion": {
+     "n": 469,
+     "media_pb": -16.06,
+     "aciertos_pct": 37.7,
+     "total_pct": -75.31,
+     "t": -3.98,
+     "p": 0.0001,
+     "factor_beneficio": 0.59,
+     "media_bruta_pb": -6.06
+    },
+    "total": {
+     "n": 1466,
+     "media_pb": -13.5,
+     "aciertos_pct": 38.6,
+     "total_pct": -197.87,
+     "t": -3.76,
+     "p": 0.0002,
+     "factor_beneficio": 0.73,
+     "media_bruta_pb": -3.5
+    },
+    "azar_media_pb_p95": -5.15
+   },
+   "nota": "Media por año sin costos (pb): {2019: -8.4, 2020: 12.1, 2021: -14.2, 2022: -2.5, 2023: -7.0, 2024: 2.7, 2025: -10.6, 2026: -0.0} Falla en ambos tramos (bruto −2,3 y −6,1 pb), pero invertida (B006) no cubre los 10 pb de costo."
+  },
+  {
+   "id": "B003",
+   "nombre": "Reversión tras día de rango extremo",
+   "idea": "Tras un día con rango > 1,8 x ATR, el día siguiente va en contra.",
+   "estado": "rechazada",
+   "codigo": "btc/hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 1,
+    "costo_pb": 10.0,
+    "muestra": {
+     "n": 198,
+     "media_pb": -0.86,
+     "aciertos_pct": 51.0,
+     "total_pct": -1.71,
+     "t": -0.03,
+     "p": 0.9758,
+     "factor_beneficio": 0.99,
+     "media_bruta_pb": 9.14
+    },
+    "validacion": {
+     "n": 76,
+     "media_pb": 13.61,
+     "aciertos_pct": 52.6,
+     "total_pct": 10.34,
+     "t": 0.38,
+     "p": 0.7047,
+     "factor_beneficio": 1.14,
+     "media_bruta_pb": 23.61
+    },
+    "total": {
+     "n": 274,
+     "media_pb": 3.15,
+     "aciertos_pct": 51.5,
+     "total_pct": 8.63,
+     "t": 0.14,
+     "p": 0.89,
+     "factor_beneficio": 1.03,
+     "media_bruta_pb": 13.15
+    },
+    "azar_media_pb_p95": 19.53
+   },
+   "nota": ""
+  },
+  {
+   "id": "B004",
+   "nombre": "Reversión del fin de semana (\"gap de CME\")",
+   "idea": "Si BTC se mueve > 2 % entre el viernes 21 UTC y el domingo 22 UTC, revierte en las 6 h siguientes.",
+   "estado": "rechazada",
+   "codigo": "btc/hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 6,
+    "costo_pb": 10.0,
+    "muestra": {
+     "n": 108,
+     "media_pb": -37.55,
+     "aciertos_pct": 45.4,
+     "total_pct": -40.55,
+     "t": -1.6,
+     "p": 0.1086,
+     "factor_beneficio": 0.64,
+     "media_bruta_pb": -27.55
+    },
+    "validacion": {
+     "n": 30,
+     "media_pb": -41.01,
+     "aciertos_pct": 50.0,
+     "total_pct": -12.3,
+     "t": -0.94,
+     "p": 0.3449,
+     "factor_beneficio": 0.58,
+     "media_bruta_pb": -31.01
+    },
+    "total": {
+     "n": 138,
+     "media_pb": -38.3,
+     "aciertos_pct": 46.4,
+     "total_pct": -52.86,
+     "t": -1.87,
+     "p": 0.0621,
+     "factor_beneficio": 0.63,
+     "media_bruta_pb": -28.3
+    },
+    "azar_media_pb_p95": 10.81
+   },
+   "nota": ""
+  },
+  {
+   "id": "B005",
+   "nombre": "Impulso de la apertura de Wall Street",
+   "idea": "Si 13-15 UTC se mueve > 0,4 %, 15-21 UTC sigue en esa dirección.",
+   "estado": "rechazada",
+   "codigo": "btc/hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 6,
+    "costo_pb": 10.0,
+    "muestra": {
+     "n": 1069,
+     "media_pb": -3.08,
+     "aciertos_pct": 42.7,
+     "total_pct": -32.96,
+     "t": -0.49,
+     "p": 0.6246,
+     "factor_beneficio": 0.96,
+     "media_bruta_pb": 6.92
+    },
+    "validacion": {
+     "n": 471,
+     "media_pb": -19.4,
+     "aciertos_pct": 41.8,
+     "total_pct": -91.35,
+     "t": -2.69,
+     "p": 0.0073,
+     "factor_beneficio": 0.7,
+     "media_bruta_pb": -9.4
+    },
+    "total": {
+     "n": 1540,
+     "media_pb": -8.07,
+     "aciertos_pct": 42.4,
+     "total_pct": -124.31,
+     "t": -1.65,
+     "p": 0.0996,
+     "factor_beneficio": 0.88,
+     "media_bruta_pb": 1.93
+    },
+    "azar_media_pb_p95": -3.36
+   },
+   "nota": ""
+  },
+  {
+   "id": "B006",
+   "nombre": "Desvanecer la ruptura asiática en Londres",
+   "idea": "Ir en contra del primer cierre de 1 h fuera del rango 00-07 UTC (07-11 UTC), 4 h.",
+   "estado": "rechazada",
+   "codigo": "btc/hipotesis/dia001_invertidas.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 4,
+    "costo_pb": 10.0,
+    "muestra": {
+     "n": 997,
+     "media_pb": -7.71,
+     "aciertos_pct": 51.0,
+     "total_pct": -76.84,
+     "t": -1.56,
+     "p": 0.1182,
+     "factor_beneficio": 0.85,
+     "media_bruta_pb": 2.29
+    },
+    "validacion": {
+     "n": 469,
+     "media_pb": -3.94,
+     "aciertos_pct": 48.0,
+     "total_pct": -18.49,
+     "t": -0.98,
+     "p": 0.3284,
+     "factor_beneficio": 0.88,
+     "media_bruta_pb": 6.06
+    },
+    "total": {
+     "n": 1466,
+     "media_pb": -6.5,
+     "aciertos_pct": 50.0,
+     "total_pct": -95.33,
+     "t": -1.81,
+     "p": 0.0704,
+     "factor_beneficio": 0.85,
+     "media_bruta_pb": 3.5
+    },
+    "azar_media_pb_p95": -3.72
+   },
+   "nota": ""
+  },
+  {
+   "id": "B007",
+   "nombre": "Desvanecer el impulso de la apertura de Wall Street",
+   "idea": "Si 13-15 UTC se mueve > 0,4 %, ir en contra de 15 a 21 UTC.",
+   "estado": "rechazada",
+   "codigo": "btc/hipotesis/dia001_invertidas.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 6,
+    "costo_pb": 10.0,
+    "muestra": {
+     "n": 1069,
+     "media_pb": -16.92,
+     "aciertos_pct": 50.7,
+     "total_pct": -180.84,
+     "t": -2.69,
+     "p": 0.0073,
+     "factor_beneficio": 0.78,
+     "media_bruta_pb": -6.92
+    },
+    "validacion": {
+     "n": 471,
+     "media_pb": -0.6,
+     "aciertos_pct": 49.9,
+     "total_pct": -2.85,
+     "t": -0.08,
+     "p": 0.9333,
+     "factor_beneficio": 0.99,
+     "media_bruta_pb": 9.4
+    },
+    "total": {
+     "n": 1540,
+     "media_pb": -11.93,
+     "aciertos_pct": 50.5,
+     "total_pct": -183.69,
+     "t": -2.43,
+     "p": 0.015,
+     "factor_beneficio": 0.83,
+     "media_bruta_pb": -1.93
+    },
+    "azar_media_pb_p95": -3.73
+   },
+   "nota": ""
+  },
+  {
+   "id": "B008",
+   "nombre": "Horizonte largo para cubrir costos",
+   "idea": "Con 10 pb de costo, buscar señales de 1-5 días: tendencia diaria (EMA 20/50), rupturas de rangos semanales y reversión tras caídas de más de 3 ATR.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "B009",
+   "nombre": "Hora 20-22 UTC",
+   "idea": "El ritmo horario muestra 21 y 22 UTC con la media más alta (+4,2 y +3,2 pb). ¿Es estable por año y sobrevive a la validación, o es ruido?",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "B010",
+   "nombre": "Barridas de liquidez del máximo/mínimo semanal",
+   "idea": "Si BTC supera el máximo de la semana anterior y vuelve a cerrar dentro en 4 h, ¿revierte hacia la mitad del rango?",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "B011",
+   "nombre": "BTC adelanta o sigue al oro",
+   "idea": "Correlación cruzada de retornos de 1 h entre BTC y PAXG; ¿alguno adelanta al otro en días de estrés?",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "B012",
+   "nombre": "Régimen de volatilidad",
+   "idea": "¿La volatilidad realizada de 7 días (percentil) cambia si funcionan las rupturas o las reversiones? Detector de régimen, igual que H006 del oro.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "B013",
+   "nombre": "Compresión de Bollinger diaria",
+   "idea": "Tras el ancho de Bollinger diario en su percentil 5 de un año, ¿la dirección de la ruptura continúa 5-10 días?",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "B014",
+   "nombre": "Búsqueda por similitud de forma",
+   "idea": "Ventanas de 7 días parecidas a la actual en toda la historia: ¿su continuación media supera al azar?",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  }
+ ],
+ "probadas": 7
+}

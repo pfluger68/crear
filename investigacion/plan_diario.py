@@ -1,12 +1,12 @@
-"""Genera el plan diario del oro (XAU de Hyperliquid, el precio que muestra Atalaya).
+"""Genera el plan diario del oro (XAU de Hyperliquid, el precio que muestra Atalaya) o de BTC (BTC/USDT de Binance).
 
 Salidas:
-- atalaya/plan-oro.json: lo lee Atalaya para dibujar zonas y operaciones sobre XAU/USD.
-- investigacion/diario/AAAA-MM-DD.md: el plan en texto.
+- atalaya/plan-oro.json o atalaya/plan-btc.json: lo lee Atalaya para dibujar zonas y operaciones (botón Plan IA).
+- investigacion/diario/AAAA-MM-DD.md o investigacion/btc/diario/AAAA-MM-DD.md: el plan en texto.
 
 El plan es mecánico (niveles que coinciden). La tarea diaria puede ajustarlo con lo aprendido
 en CONOCIMIENTO.md antes de publicarlo, y debe anotar los ajustes en "notas".
-Uso: python3 investigacion/plan_diario.py
+Uso: python3 investigacion/plan_diario.py [oro|btc]
 """
 import json, os
 from datetime import datetime, timezone
@@ -34,8 +34,15 @@ def giros(df, k):
     return altos, bajos
 
 
-def main():
-    d1, h4, h1, m15 = (cargar(iv, 'HL') for iv in ('1d', '4h', '1h', '15m'))
+CONFIG = {
+    'oro': {'fuente': 'HL', 'mercado': 'XAUUSD', 'nombre': 'oro', 'origen': 'Hyperliquid xyz:GOLD', 'json': 'plan-oro.json', 'diario': os.path.join(BASE, 'diario')},
+    'btc': {'fuente': 'BTCUSDT', 'mercado': 'BTCUSDT', 'nombre': 'BTC', 'origen': 'Binance BTC/USDT', 'json': 'plan-btc.json', 'diario': os.path.join(BASE, 'btc', 'diario')},
+}
+
+
+def main(activo='oro'):
+    cfg = CONFIG[activo]
+    d1, h4, h1, m15 = (cargar(iv, cfg['fuente']) for iv in ('1d', '4h', '1h', '15m'))
     precio = float(m15.c.iloc[-1])
     ahora = m15.index[-1]
     hoy = ahora.normalize()
@@ -57,7 +64,7 @@ def main():
     niveles += [(x, 'giro de 1 h') for x in ga + gb]
     # nodos de volumen (1 h, últimos 5 días)
     rec = h1[h1.index > ahora - pd.Timedelta(days=5)]
-    paso = max(1.0, round(atr_h / 5))
+    paso = atr_h / 5
     nodos = ((rec.h + rec.l + rec.c) / 3 / paso).round() * paso
     vol = rec.v.groupby(nodos).sum().sort_values(ascending=False)
     niveles += [(float(x), 'nodo de volumen') for x in vol.index[:5]]
@@ -111,19 +118,19 @@ def main():
             [{'tipo': 'compra', 'desde': r2(g['desde']), 'hasta': r2(g['hasta']), 'peso': g['peso'], 'motivo': ', '.join(dict.fromkeys(g['motivos']))} for g in abajo]
     plan = {
         'fecha': hoy.strftime('%Y-%m-%d'), 'generado': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%MZ'),
-        'mercado': 'XAUUSD', 'fuente': 'Hyperliquid xyz:GOLD', 'precio': r2(precio), 'sesgo': sesgo,
+        'mercado': cfg['mercado'], 'fuente': cfg['origen'], 'precio': r2(precio), 'sesgo': sesgo,
         'atr_diario': r2(atr_d), 'atr_1h': r2(atr_h),
         'contexto': {'ema20_d': r2(e20d), 'ema50_d': r2(e50d), 'ayer': {'max': r2(ayer.h), 'min': r2(ayer.l), 'cierre': r2(ayer.c)}, 'pivote': r2(P)},
         'zonas': zonas, 'operaciones': ops,
         'notas': [],
     }
-    return plan
+    return plan, cfg
 
 
-def escribir(plan):
-    json.dump(plan, open(os.path.join(RAIZ, 'atalaya', 'plan-oro.json'), 'w'), ensure_ascii=False, indent=1)
+def escribir(plan, cfg):
+    json.dump(plan, open(os.path.join(RAIZ, 'atalaya', cfg['json']), 'w'), ensure_ascii=False, indent=1)
     f = lambda x: f'{x:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.')
-    t = [f"# Plan del oro · {plan['fecha']}", '',
+    t = [f"# Plan del {cfg['nombre']} · {plan['fecha']}", '',
          f"Precio {f(plan['precio'])} · sesgo **{plan['sesgo']}** · ATR diario {f(plan['atr_diario'])} · ATR 1 h {f(plan['atr_1h'])}", '',
          '## Zonas', '']
     for z in plan['zonas']:
@@ -134,10 +141,12 @@ def escribir(plan):
     if plan['notas']:
         t += ['', '## Notas', ''] + [f'- {n}' for n in plan['notas']]
     t += ['', '_Análisis técnico automático, no es asesoramiento financiero._', '']
-    open(os.path.join(BASE, 'diario', plan['fecha'] + '.md'), 'w').write('\n'.join(t))
+    os.makedirs(cfg['diario'], exist_ok=True)
+    open(os.path.join(cfg['diario'], plan['fecha'] + '.md'), 'w').write('\n'.join(t))
 
 
 if __name__ == '__main__':
-    plan = main()
-    escribir(plan)
+    import sys
+    plan, cfg = main(sys.argv[1] if len(sys.argv) > 1 else 'oro')
+    escribir(plan, cfg)
     print(json.dumps(plan, ensure_ascii=False, indent=1))

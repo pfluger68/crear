@@ -10,10 +10,10 @@ Solo se escribe aquí lo que los datos sostienen. Las ideas sin probar van en `h
 ## Hallazgos firmes
 
 1. **El oro cambió de régimen a mediados de 2024** (H003 y H004). Entre 2021 y mediados de 2024 los excesos se revertían:
-   - Las rupturas del rango asiático durante Londres fallaban (t = −4,7).
+   - Las rupturas del rango asiático durante Londres fallaban: −5,6 pb por operación antes de costos, t ≈ −3,1. (El t = −4,7 que se citó al principio incluía el costo; corregido el 26-11.)
    - Los días de rango extremo se corregían al día siguiente.
 
-   Desde mediados de 2024 pasa lo contrario: las rupturas tienden a continuar y los días extremos también.
+   Desde mediados de 2024 pasa lo contrario: las rupturas tienden a continuar (+6,7 pb antes de costos) y los días extremos también.
    **Consecuencia:** ninguna regla fija de "ruptura" o "reversión" es estable. Primero hay que saber en qué régimen está el mercado (ver H006).
 2. **La volatilidad se concentra entre las 12 y las 15 UTC** (H001). Es la apertura de Nueva York y los datos de EE. UU.: el movimiento medio por hora es ~19 pb, frente a 10–13 pb en Asia.
    - Sábado y domingo la volatilidad cae a la mitad (~9 pb), porque solo cotiza el oro tokenizado.
@@ -31,6 +31,11 @@ Solo se escribe aquí lo que los datos sostienen. Las ideas sin probar van en `h
 
 - **H002 · Martillo diario tras caída:** sin ventaja. No usar un martillo diario como razón para comprar.
 - **H003 y H004 como reglas fijas:** ver el cambio de régimen en "Hallazgos firmes".
+
+## Lecciones de método
+
+- Mirar siempre la media **bruta** (antes de costos), no solo la neta. Una señal "muy negativa" puede ser solo el costo.
+- Si una señal sale negativa, probar la **invertida** antes de concluir que "lo contrario funciona".
 
 ## Cómo usar esto en el plan diario
 

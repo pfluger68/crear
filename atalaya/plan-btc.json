@@ -1,0 +1,80 @@
+{
+ "fecha": "2026-11-26",
+ "generado": "2026-11-26T05:22Z",
+ "mercado": "BTCUSDT",
+ "fuente": "Binance BTC/USDT",
+ "precio": 60902.7,
+ "sesgo": "bajista",
+ "atr_diario": 3523.7,
+ "atr_1h": 673.96,
+ "contexto": {
+  "ema20_d": 65969.09,
+  "ema50_d": 72014.06,
+  "ayer": {
+   "max": 60568.01,
+   "min": 57300.38,
+   "cierre": 60458.01
+  },
+  "pivote": 59442.13
+ },
+ "zonas": [
+  {
+   "tipo": "venta",
+   "desde": 61510.82,
+   "hasta": 61713.01,
+   "peso": 4.0,
+   "motivo": "EMA 50 de 4 h, R1, giro de 1 h"
+  },
+  {
+   "tipo": "venta",
+   "desde": 61910.36,
+   "hasta": 62112.54,
+   "peso": 2.5,
+   "motivo": "giro de 1 h, giro de 4 h"
+  },
+  {
+   "tipo": "venta",
+   "desde": 63243.23,
+   "hasta": 63445.42,
+   "peso": 2.0,
+   "motivo": "giro de 4 h, nodo de volumen"
+  },
+  {
+   "tipo": "compra",
+   "desde": 59174.06,
+   "hasta": 59713.24,
+   "peso": 5.0,
+   "motivo": "nodo de volumen, giro de 1 h, pivote"
+  },
+  {
+   "tipo": "compra",
+   "desde": 57199.29,
+   "hasta": 57401.47,
+   "peso": 3.0,
+   "motivo": "giro de 1 h, giro de 4 h, mínimo de ayer"
+  }
+ ],
+ "operaciones": [
+  {
+   "lado": "venta",
+   "entrada": 61611.91,
+   "sl": 62117.39,
+   "tp1": 59443.65,
+   "tp2": 57300.38,
+   "rb1": 4.29,
+   "a_favor": true,
+   "condicion": "Entrar solo si en 15 m aparece rechazo dentro de la zona (mecha o vela envolvente). Si no, no hay operación."
+  },
+  {
+   "lado": "compra",
+   "entrada": 59443.65,
+   "sl": 58769.69,
+   "tp1": 61611.91,
+   "tp2": 62011.45,
+   "rb1": 3.22,
+   "a_favor": false,
+   "condicion": "Entrar solo si en 15 m aparece rechazo dentro de la zona (mecha o vela envolvente). Si no, no hay operación."
+  }
+ ],
+ "notas": []
+}

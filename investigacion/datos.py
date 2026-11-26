@@ -1,10 +1,12 @@
-"""Descarga y actualiza las velas del oro.
+"""Descarga y actualiza las velas del oro y de BTC.
 
 - PAXG/USDT (Binance): oro tokenizado, historial desde agosto de 2020. Es la base de la investigación.
 - XAU (Hyperliquid, contrato xyz:GOLD): el precio que muestra Atalaya. Sirve para el plan del día.
 
 Los CSV quedan en investigacion/datos/ (no se suben al repositorio; se regeneran en cada ejecución).
-Uso: python3 investigacion/datos.py
+- BTC/USDT (Binance): 1d desde 2017, 4h y 1h desde 2019, 15m desde 2023.
+
+Uso: python3 investigacion/datos.py [oro|btc|todo]
 """
 import csv, json, os, time, urllib.request
 
@@ -72,7 +74,13 @@ def hyperliquid(coin='xyz:GOLD', intervalo='1h', velas=5000):
 
 
 if __name__ == '__main__':
-    for iv in ('1h', '15m', '1d'):
-        print(*binance('PAXGUSDT', iv, '2020-08-01' if iv != '15m' else '2023-01-01'))
-    for iv in ('15m', '1h', '4h', '1d'):
-        print(*hyperliquid('xyz:GOLD', iv))
+    import sys
+    que = sys.argv[1] if len(sys.argv) > 1 else 'todo'   # oro | btc | todo
+    if que in ('oro', 'todo'):
+        for iv in ('1h', '15m', '1d'):
+            print(*binance('PAXGUSDT', iv, '2020-08-01' if iv != '15m' else '2023-01-01'))
+        for iv in ('15m', '1h', '4h', '1d'):
+            print(*hyperliquid('xyz:GOLD', iv))
+    if que in ('btc', 'todo'):
+        for iv, desde in (('1d', '2017-09-01'), ('4h', '2019-01-01'), ('1h', '2019-01-01'), ('15m', '2023-01-01')):
+            print(*binance('BTCUSDT', iv, desde))

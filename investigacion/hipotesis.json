@@ -1,6 +1,106 @@
 {
  "hipotesis": [
   {
+   "id": "H006",
+   "nombre": "Detector de régimen",
+   "idea": "Medir si el mercado está en modo reversión o continuación (p. ej. autocorrelación de retornos de 1 h en 20 días, ratio de varianzas, Hurst) y comprobar si ese régimen predice si funciona H003 normal o invertida.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H007",
+   "nombre": "Barrida de liquidez del máximo/mínimo de ayer",
+   "idea": "Cuando el precio supera el máximo (o mínimo) del día anterior y en la misma vela de 1 h o la siguiente vuelve a cerrar dentro, ¿revierte hacia el pivote? Separar por régimen.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H008",
+   "nombre": "Quién lidera: PAXG o el contrato XAU de Hyperliquid",
+   "idea": "Correlación cruzada de retornos de 1 m/15 m entre PAXG (Binance) y xyz:GOLD (Hyperliquid). Si uno adelanta al otro, es información útil para entrar.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H009",
+   "nombre": "Imán de números redondos",
+   "idea": "¿El precio se detiene o rebota más de lo normal en múltiplos de 50 y 100 USD? Comparar con niveles al azar.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H010",
+   "nombre": "Compresión antes de la expansión",
+   "idea": "Tras N horas con rango muy inferior a su ATR (percentil 10), ¿la siguiente expansión tiene dirección predecible (por ejemplo, la de la tendencia de 4 h)?",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H011",
+   "nombre": "Rachas de velas",
+   "idea": "Tras k velas de 1 h seguidas en la misma dirección (k=4..7), ¿continúa o revierte la siguiente? Separar por régimen y por sesión.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H012",
+   "nombre": "Firma de la apertura de Nueva York",
+   "idea": "¿El movimiento de 13:30–14:30 UTC predice la dirección del resto de la sesión de EE. UU.? Distinguir días de datos macro (no disponibles: aproximar con la volatilidad de esa hora).",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H013",
+   "nombre": "Estructura de las mechas",
+   "idea": "¿El tamaño relativo de las mechas superior e inferior acumulado en 24 h (presión de compra/venta oculta) predice el retorno de las próximas 24 h?",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H014",
+   "nombre": "Distribución de tiempos hasta tocar niveles",
+   "idea": "Probabilidad empírica de que el precio toque el pivote, R1 o S1 durante el día según dónde abre. Sirve para calibrar los take profit del plan.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H015",
+   "nombre": "Patrones de forma (búsqueda por similitud)",
+   "idea": "Buscar en la historia las ventanas de 48 h más parecidas (correlación de forma normalizada) a las últimas 48 h y ver si su continuación media es significativa frente a ventanas al azar.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
    "id": "H001",
    "nombre": "Ritmo horario y semanal",
    "idea": "Cómo cambian el movimiento medio y la volatilidad según la hora UTC y el día.",
@@ -105,7 +205,8 @@
      "total_pct": -4.45,
      "t": -0.84,
      "p": 0.4033,
-     "factor_beneficio": 0.72
+     "factor_beneficio": 0.72,
+     "media_bruta_pb": -7.11
     },
     "validacion": {
      "n": 22,
@@ -114,7 +215,8 @@
      "total_pct": 5.04,
      "t": 0.8,
      "p": 0.4218,
-     "factor_beneficio": 1.7
+     "factor_beneficio": 1.7,
+     "media_bruta_pb": 25.92
     },
     "total": {
      "n": 66,
@@ -123,7 +225,8 @@
      "total_pct": 0.6,
      "t": 0.07,
      "p": 0.9422,
-     "factor_beneficio": 1.03
+     "factor_beneficio": 1.03,
+     "media_bruta_pb": 3.9
     },
     "azar_media_pb_p95": 19.5
    },
@@ -146,7 +249,8 @@
      "total_pct": -48.58,
      "t": -4.73,
      "p": 0.0,
-     "factor_beneficio": 0.57
+     "factor_beneficio": 0.57,
+     "media_bruta_pb": -5.58
     },
     "validacion": {
      "n": 409,
@@ -155,7 +259,8 @@
      "total_pct": 15.01,
      "t": 1.58,
      "p": 0.114,
-     "factor_beneficio": 1.27
+     "factor_beneficio": 1.27,
+     "media_bruta_pb": 6.67
     },
     "total": {
      "n": 975,
@@ -164,7 +269,8 @@
      "total_pct": -33.57,
      "t": -2.38,
      "p": 0.0173,
-     "factor_beneficio": 0.8
+     "factor_beneficio": 0.8,
+     "media_bruta_pb": -0.44
     },
     "azar_media_pb_p95": -0.88
    },
@@ -187,7 +293,8 @@
      "total_pct": 12.46,
      "t": 1.17,
      "p": 0.244,
-     "factor_beneficio": 1.36
+     "factor_beneficio": 1.36,
+     "media_bruta_pb": 13.65
     },
     "validacion": {
      "n": 82,
@@ -196,7 +303,8 @@
      "total_pct": -35.23,
      "t": -1.96,
      "p": 0.0494,
-     "factor_beneficio": 0.46
+     "factor_beneficio": 0.46,
+     "media_bruta_pb": -39.96
     },
     "total": {
      "n": 199,
@@ -205,7 +313,8 @@
      "total_pct": -22.76,
      "t": -1.08,
      "p": 0.2816,
-     "factor_beneficio": 0.77
+     "factor_beneficio": 0.77,
+     "media_bruta_pb": -8.44
     },
     "azar_media_pb_p95": 10.68
    },
@@ -228,7 +337,8 @@
      "total_pct": 9.3,
      "t": 2.35,
      "p": 0.0187,
-     "factor_beneficio": 3.11
+     "factor_beneficio": 3.11,
+     "media_bruta_pb": 24.62
     },
     "validacion": {
      "n": 44,
@@ -237,7 +347,8 @@
      "total_pct": 7.1,
      "t": 1.15,
      "p": 0.2506,
-     "factor_beneficio": 1.71
+     "factor_beneficio": 1.71,
+     "media_bruta_pb": 19.13
     },
     "total": {
      "n": 87,
@@ -246,111 +357,12 @@
      "total_pct": 16.4,
      "t": 2.25,
      "p": 0.0246,
-     "factor_beneficio": 2.14
+     "factor_beneficio": 2.14,
+     "media_bruta_pb": 21.85
     },
     "azar_media_pb_p95": 2.72
    },
    "nota": "Significativa en muestra (t=2,35), positiva pero no significativa en validación (n=44). A 12 h no funciona. Seguir en vivo cada domingo."
-  },
-  {
-   "id": "H006",
-   "nombre": "Detector de régimen",
-   "idea": "Medir si el mercado está en modo reversión o continuación (p. ej. autocorrelación de retornos de 1 h en 20 días, ratio de varianzas, Hurst) y comprobar si ese régimen predice si funciona H003 normal o invertida.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
-   "id": "H007",
-   "nombre": "Barrida de liquidez del máximo/mínimo de ayer",
-   "idea": "Cuando el precio supera el máximo (o mínimo) del día anterior y en la misma vela de 1 h o la siguiente vuelve a cerrar dentro, ¿revierte hacia el pivote? Separar por régimen.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
-   "id": "H008",
-   "nombre": "Quién lidera: PAXG o el contrato XAU de Hyperliquid",
-   "idea": "Correlación cruzada de retornos de 1 m/15 m entre PAXG (Binance) y xyz:GOLD (Hyperliquid). Si uno adelanta al otro, es información útil para entrar.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
-   "id": "H009",
-   "nombre": "Imán de números redondos",
-   "idea": "¿El precio se detiene o rebota más de lo normal en múltiplos de 50 y 100 USD? Comparar con niveles al azar.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
-   "id": "H010",
-   "nombre": "Compresión antes de la expansión",
-   "idea": "Tras N horas con rango muy inferior a su ATR (percentil 10), ¿la siguiente expansión tiene dirección predecible (por ejemplo, la de la tendencia de 4 h)?",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
-   "id": "H011",
-   "nombre": "Rachas de velas",
-   "idea": "Tras k velas de 1 h seguidas en la misma dirección (k=4..7), ¿continúa o revierte la siguiente? Separar por régimen y por sesión.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
-   "id": "H012",
-   "nombre": "Firma de la apertura de Nueva York",
-   "idea": "¿El movimiento de 13:30–14:30 UTC predice la dirección del resto de la sesión de EE. UU.? Distinguir días de datos macro (no disponibles: aproximar con la volatilidad de esa hora).",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
-   "id": "H013",
-   "nombre": "Estructura de las mechas",
-   "idea": "¿El tamaño relativo de las mechas superior e inferior acumulado en 24 h (presión de compra/venta oculta) predice el retorno de las próximas 24 h?",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
-   "id": "H014",
-   "nombre": "Distribución de tiempos hasta tocar niveles",
-   "idea": "Probabilidad empírica de que el precio toque el pivote, R1 o S1 durante el día según dónde abre. Sirve para calibrar los take profit del plan.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
-   "id": "H015",
-   "nombre": "Patrones de forma (búsqueda por similitud)",
-   "idea": "Buscar en la historia las ventanas de 48 h más parecidas (correlación de forma normalizada) a las últimas 48 h y ver si su continuación media es significativa frente a ventanas al azar.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
   }
  ],
  "probadas": 5

@@ -11,7 +11,8 @@ Reglas (para no engañarnos):
    Luego pasa a "seguimiento en vivo"; se confirma solo si sigue funcionando con datos que todavía no existían.
 
 Uso desde un archivo de hipótesis:
-    from motor import cargar, evaluar, registrar
+    from motor import usar, cargar, evaluar, registrar
+    usar('btc')   # o 'oro' (por defecto)
     df = cargar('1h')
     senal = ...  # pd.Series alineada a df
     res = evaluar(senal, df, horizonte=4)
@@ -24,19 +25,41 @@ import pandas as pd
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 DATOS = os.path.join(BASE, 'datos')
+CORTE = '2024-07-01'    # a partir de aquí es validación fuera de muestra (igual para todos los activos)
+
+# Cada activo tiene su propia memoria (carpeta), su fuente de datos y su costo por operación.
+ACTIVOS = {
+    # PAXG: 2020 tuvo poca liquidez, se excluye. Costo ≈ 1 USD por onza con oro a 3.500.
+    'oro': {'carpeta': BASE, 'fuente': 'PAXGUSDT', 'inicio': '2021-01-01', 'costo_pb': 3.0},
+    # BTC: desde 2019. Costo de un perpetuo con comisión taker (~0,05 % por lado).
+    'btc': {'carpeta': os.path.join(BASE, 'btc'), 'fuente': 'BTCUSDT', 'inicio': '2019-01-01', 'costo_pb': 10.0},
+}
+ACTIVO = 'oro'
 REGISTRO = os.path.join(BASE, 'hipotesis.json')
-INICIO = '2021-01-01'   # 2020 tuvo poca liquidez en PAXG: se excluye
-CORTE = '2024-07-01'    # a partir de aquí es validación fuera de muestra
-COSTO_PB = 3.0          # costo por operación ida y vuelta, en puntos básicos (≈ 1 USD por onza con oro a 3.500)
+INICIO = ACTIVOS['oro']['inicio']
+COSTO_PB = ACTIVOS['oro']['costo_pb']
+FUENTE = ACTIVOS['oro']['fuente']
 
 
-def cargar(intervalo='1h', fuente='PAXGUSDT'):
-    nombre = f'{fuente}_{intervalo}.csv' if fuente == 'PAXGUSDT' else f'XAU_HL_{intervalo}.csv'
+def usar(activo):
+    """Elige el activo de trabajo: 'oro' (por defecto) o 'btc'. Llamarlo al inicio de cada script de hipótesis."""
+    global ACTIVO, REGISTRO, INICIO, COSTO_PB, FUENTE
+    a = ACTIVOS[activo]
+    ACTIVO, INICIO, COSTO_PB, FUENTE = activo, a['inicio'], a['costo_pb'], a['fuente']
+    REGISTRO = os.path.join(a['carpeta'], 'hipotesis.json')
+    return a
+
+
+def cargar(intervalo='1h', fuente=None):
+    """fuente: None (la del activo elegido con usar()), 'PAXGUSDT', 'BTCUSDT' o 'HL' (oro de Hyperliquid)."""
+    fuente = fuente or FUENTE
+    nombre = f'XAU_HL_{intervalo}.csv' if fuente == 'HL' else f'{fuente}_{intervalo}.csv'
     df = pd.read_csv(os.path.join(DATOS, nombre))
     df['fecha'] = pd.to_datetime(df['t'], unit='s', utc=True)
     df = df.set_index('fecha').drop(columns='t')
-    if fuente == 'PAXGUSDT':
-        df = df[df.index >= INICIO]
+    if fuente != 'HL':
+        inicio = next((a['inicio'] for a in ACTIVOS.values() if a['fuente'] == fuente), INICIO)
+        df = df[df.index >= inicio]
     return df
 
 
@@ -71,7 +94,7 @@ def _stats(r):
     }
 
 
-def evaluar(senal, df, horizonte, costo_pb=COSTO_PB, entrada='siguiente_apertura'):
+def evaluar(senal, df, horizonte, costo_pb=None, entrada='siguiente_apertura'):
     """Evalúa una señal direccional.
 
     senal: pd.Series (+1/-1/0) con el mismo índice que df, conocida al cierre de cada vela.
@@ -79,6 +102,7 @@ def evaluar(senal, df, horizonte, costo_pb=COSTO_PB, entrada='siguiente_apertura
     entrada: 'siguiente_apertura' (realista) o 'cierre'.
     Devuelve estadísticas en muestra, validación y total, más una referencia de azar.
     """
+    costo_pb = COSTO_PB if costo_pb is None else costo_pb
     senal = senal.reindex(df.index).fillna(0).astype(int).values
     o, c = df['o'].values, df['c'].values
     n = len(df)
@@ -89,7 +113,8 @@ def evaluar(senal, df, horizonte, costo_pb=COSTO_PB, entrada='siguiente_apertura
         precio_in, precio_out = o[pos + 1], c[pos + horizonte]
     else:
         precio_in, precio_out = c[pos], c[pos + horizonte]
-    r = senal[pos] * np.log(precio_out / precio_in) - costo_pb / 1e4
+    bruto = senal[pos] * np.log(precio_out / precio_in)
+    r = bruto - costo_pb / 1e4
     fechas = df.index[pos]
     corte = pd.Timestamp(CORTE, tz='UTC')
     m_in, m_out = fechas < corte, fechas >= corte
@@ -101,12 +126,16 @@ def evaluar(senal, df, horizonte, costo_pb=COSTO_PB, entrada='siguiente_apertura
         s = rng.choice(todas, size=max(1, len(pos)), replace=False)
         lado = rng.choice(senal[pos], size=len(s)) if len(pos) else np.ones(len(s))
         azar.append(np.mean(lado * np.log(c[s + horizonte] / o[s + 1]) - costo_pb / 1e4))
+    sm, sv, st = _stats(r[m_in]), _stats(r[m_out]), _stats(r)
+    for d_, m_ in ((sm, m_in), (sv, m_out), (st, slice(None))):
+        if d_.get('n', 0) >= 1:
+            d_['media_bruta_pb'] = round(float(np.mean(bruto[m_])) * 1e4, 2)  # antes de costos
     return {
         'horizonte': horizonte,
         'costo_pb': costo_pb,
-        'muestra': _stats(r[m_in]),
-        'validacion': _stats(r[m_out]),
-        'total': _stats(r),
+        'muestra': sm,
+        'validacion': sv,
+        'total': st,
         'azar_media_pb_p95': round(float(np.percentile(azar, 95)) * 1e4, 2),
     }
 
@@ -142,5 +171,5 @@ def registrar(id_, nombre, idea, resultado, codigo=None, estado=None, nota=''):
 
 def resumen(res):
     a, b = res['muestra'], res['validacion']
-    f = lambda s: f"n={s.get('n')} media={s.get('media_pb')}pb aciertos={s.get('aciertos_pct')}% t={s.get('t')} p={s.get('p')}"
+    f = lambda s: f"n={s.get('n')} neta={s.get('media_pb')}pb bruta={s.get('media_bruta_pb')}pb aciertos={s.get('aciertos_pct')}% t={s.get('t')} p={s.get('p')}"
     return f"MUESTRA {f(a)} | VALIDACIÓN {f(b)} | azar p95={res['azar_media_pb_p95']}pb"
