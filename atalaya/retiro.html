@@ -48,6 +48,13 @@ label{display:grid;gap:4px;font-size:12px;color:var(--muted)}
 label.full{grid-column:1/-1}
 input{font:500 14px var(--f-data);color:var(--fg);background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:8px 9px;width:100%;min-width:0}
 input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:3px}
+.seg button{font:600 13px var(--f-ui);border:0;border-radius:6px;padding:8px;background:transparent;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--panel)}
+.seg.full{grid-column:1/-1}
+.mep-row{display:flex;gap:6px}
+.mep-row button{font:500 12.5px var(--f-ui);background:var(--panel-2);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:0 10px;cursor:pointer}
+.echo{font:11.5px var(--f-data);color:var(--muted);min-height:1em}
 .hint{font-size:11.5px;color:var(--muted);grid-column:1/-1;margin:-4px 0 0}
 .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .kpi{background:var(--panel-2);border-radius:8px;padding:10px 12px;display:grid;gap:4px;min-width:0}
@@ -77,7 +84,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
   <header class="panel">
     <div>
       <h1>Calculadora de retiro</h1>
-      <p class="lead">Cuánto necesitas juntar para vivir de tus inversiones y en cuántos años llegas con lo que aportas. Todo está en dólares de hoy, ya descontada la inflación.</p>
+      <p class="lead">Cuánto necesitas juntar para vivir de tus inversiones y en cuántos años llegas con lo que aportas. Puedes usarla en dólares o en pesos; los resultados están en dinero de hoy, ya descontada la inflación.</p>
     </div>
     <a href="./">← Volver a Atalaya</a>
   </header>
@@ -87,22 +94,33 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
       <h2>Tus datos</h2>
       <form id="f" autocomplete="off">
         <fieldset>
+          <legend>Moneda</legend>
+          <div class="seg full" role="group" aria-label="Moneda">
+            <button type="button" data-cur="USD" aria-pressed="true">Dólares</button>
+            <button type="button" data-cur="ARS" aria-pressed="false">Pesos</button>
+          </div>
+          <label class="full" id="mepBox" hidden>Dólar MEP (pesos por dólar)
+            <span class="mep-row"><input id="mep" type="number" min="1" step="1" inputmode="decimal" placeholder="Ej.: 1250"><button type="button" id="mepUpd">Actualizar</button></span>
+          </label>
+          <p class="hint" id="mepHint" hidden></p>
+        </fieldset>
+        <fieldset>
           <legend>Tú</legend>
           <label>Edad actual<input id="edad" type="number" min="16" max="80" value="40" inputmode="numeric"></label>
           <label>Edad a la que quieres retirarte<input id="edadObj" type="number" min="20" max="90" value="55" inputmode="numeric"></label>
         </fieldset>
         <fieldset>
-          <legend>Ahorro (USD)</legend>
-          <label>Capital invertido hoy<input id="cap" type="number" min="0" step="100" value="5000" inputmode="decimal"></label>
-          <label>Aporte por mes<input id="aporte" type="number" min="0" step="10" value="400" inputmode="decimal"></label>
+          <legend>Ahorro (<span class="cur">USD</span>)</legend>
+          <label>Capital invertido hoy<input id="cap" type="number" min="0" step="100" value="5000" inputmode="decimal"><small class="echo" data-echo="cap"></small></label>
+          <label>Aporte por mes<input id="aporte" type="number" min="0" step="10" value="400" inputmode="decimal"><small class="echo" data-echo="aporte"></small></label>
           <label>Suba anual del aporte (%)<input id="crec" type="number" step="0.5" value="2" inputmode="decimal"></label>
-          <label>Ingreso extra por mes<input id="extra" type="number" step="10" value="0" inputmode="decimal"></label>
+          <label>Ingreso extra por mes<input id="extra" type="number" step="10" value="0" inputmode="decimal"><small class="echo" data-echo="extra"></small></label>
           <p class="hint">"Ingreso extra" es lo que sumarías de otras fuentes, como el trading. Déjalo en 0 hasta que tengas resultados comprobados.</p>
         </fieldset>
         <fieldset>
           <legend>Retiro</legend>
-          <label class="full">Gasto mensual que quieres cubrir (USD de hoy)<input id="gasto" type="number" min="0" step="50" value="1500" inputmode="decimal"></label>
-          <label>Otros ingresos en el retiro<input id="otros" type="number" min="0" step="50" value="0" inputmode="decimal"></label>
+          <label class="full"><span>Gasto mensual que quieres cubrir (<span class="cur">USD</span> de hoy)</span><input id="gasto" type="number" min="0" step="50" value="1500" inputmode="decimal"><small class="echo" data-echo="gasto"></small></label>
+          <label>Otros ingresos en el retiro<input id="otros" type="number" min="0" step="50" value="0" inputmode="decimal"><small class="echo" data-echo="otros"></small></label>
           <label>Tasa de retiro (%)<input id="swr" type="number" min="1" max="8" step="0.1" value="3.5" inputmode="decimal"></label>
           <p class="hint">Por ejemplo, un alquiler o una jubilación. La tasa de retiro es el % del capital que gastarías por año. Para un retiro temprano (35–45 años de duración) se usa 3–3,5 %.</p>
         </fieldset>
@@ -145,7 +163,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 
   <section class="panel notes">
     <h2>Cómo leerlo</h2>
-    <p><b>Todo en dólares de hoy.</b> Si dice 400.000 USD dentro de 15 años, es lo que hoy compraría 400.000 USD. La inflación ya está descontada.</p>
+    <p><b>Todo en dinero de hoy.</b> Si dice 400.000 USD dentro de 15 años, es lo que hoy compraría 400.000 USD. La inflación ya está descontada.</p>
+    <p><b>En pesos:</b> la cuenta se hace igual en dólares (la inversión está dolarizada) y se convierte al dólar MEP del día. Así la inflación argentina no deforma los números: los resultados son pesos de hoy. Si el dólar sube mucho más o mucho menos que los precios, los montos en pesos cambiarán; conviene repetir la cuenta cada tanto.</p>
     <p><b>El capital que necesitas</b> es tu gasto anual (menos otros ingresos) dividido por la tasa de retiro. Con 3,5 %, cada 1.000 USD al mes de gasto requieren unos 343.000 USD invertidos.</p>
     <p><b>La probabilidad</b> sale de simular 3.000 caminos con años buenos y malos al azar, con la volatilidad que indicaste. Cuidado: una probabilidad alta no es una garantía.</p>
     <p><b>Lo que más mueve el resultado:</b> el aporte mensual y los años que lo sostienes. Una parte del rendimiento no depende de ti, pero esas dos cosas sí.</p>
@@ -160,13 +179,62 @@ const $ = id => document.getElementById(id);
 const IDS = ['edad','edadObj','cap','aporte','crec','extra','gasto','otros','swr','rend','infl','costos','vol'];
 const nf0 = new Intl.NumberFormat('es-AR', {maximumFractionDigits:0});
 const nf1 = new Intl.NumberFormat('es-AR', {minimumFractionDigits:1, maximumFractionDigits:1});
-const usd = v => isFinite(v) ? nf0.format(Math.round(v)) + ' USD' : '—';
-const usdK = v => !isFinite(v) ? '—' : Math.abs(v) >= 1e6 ? nf1.format(v / 1e6) + ' M USD' : Math.abs(v) >= 1e4 ? nf0.format(Math.round(v / 1000)) + ' mil USD' : usd(v);
+const MONEY = ['cap', 'aporte', 'extra', 'gasto', 'otros'];
+let cur = 'USD', rate = NaN, rateInfo = '', pendiente = false;  // pendiente: se eligió pesos sin cotización; los montos siguen en dólares
+// Las cuentas se hacen siempre en dólares; estas funciones muestran el monto en la moneda elegida.
+const enPesos = () => cur === 'ARS' && rate > 0;
+const usd = v => !isFinite(v) ? '—' : enPesos() ? '$ ' + nf0.format(Math.round(v * rate)) : nf0.format(Math.round(v)) + ' USD';
+const usdK = v => {
+  if (!isFinite(v)) return '—';
+  if (enPesos()){ const x = v * rate; return Math.abs(x) >= 1e6 ? '$ ' + nf1.format(x / 1e6) + ' M' : usd(v); }
+  return Math.abs(v) >= 1e6 ? nf1.format(v / 1e6) + ' M USD' : Math.abs(v) >= 1e4 ? nf0.format(Math.round(v / 1000)) + ' mil USD' : usd(v);
+};
 
-try { const s = JSON.parse(localStorage.getItem('atalaya.retiro') || 'null'); if (s) for (const k of IDS) if (s[k] != null) $(k).value = s[k]; } catch(_) {}
+try {
+  const s = JSON.parse(localStorage.getItem('atalaya.retiro') || 'null');
+  if (s){ for (const k of IDS) if (s[k] != null) $(k).value = s[k]; if (s.cur === 'ARS') cur = 'ARS'; if (+s.mep > 0){ rate = +s.mep; $('mep').value = s.mep; } rateInfo = s.mepInfo || ''; }
+} catch(_) {}
+
+function ecos(){
+  document.querySelectorAll('[data-echo]').forEach(e => {
+    const x = parseFloat($(e.dataset.echo).value);
+    e.textContent = !isFinite(x) ? '' : cur === 'ARS' ? '$ ' + nf0.format(x) + (rate > 0 && !pendiente ? ` ≈ ${nf0.format(Math.round(x / rate))} USD` : '') : nf0.format(x) + ' USD';
+  });
+}
+function curUI(){
+  document.querySelectorAll('[data-cur]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cur === cur));
+  document.querySelectorAll('.cur').forEach(e => { e.textContent = cur === 'ARS' ? 'pesos' : 'USD'; });
+  $('mepBox').hidden = cur !== 'ARS';
+  const h = $('mepHint'); h.hidden = cur !== 'ARS';
+  h.textContent = (rateInfo ? rateInfo + ' ' : '') + 'Escribes y ves todo en pesos; por dentro la cuenta se hace en dólares para que la inflación no deforme los números.';
+  for (const k of MONEY) $(k).step = cur === 'ARS' ? '1000' : '10';
+}
+async function traerMEP(){
+  try {
+    const r = await fetch('https://dolarapi.com/v1/dolares/bolsa', {cache:'no-store'});
+    if (!r.ok) throw 0;
+    const j = await r.json(), v = +j.venta;
+    if (!(v > 0)) throw 0;
+    rate = v; $('mep').value = Math.round(v);
+    rateInfo = `Dólar MEP: $ ${nf0.format(Math.round(v))} (dolarapi.com, ${new Intl.DateTimeFormat('es-AR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}).format(new Date(j.fechaActualizacion || Date.now()))}).`;
+    return true;
+  } catch(_) { rateInfo = 'No pude traer la cotización automáticamente: escribe el dólar MEP de hoy.'; return false; }
+}
+async function setCur(c){
+  if (c === cur) return;
+  if (c === 'ARS' && !(rate > 0)) await traerMEP();
+  if (c === 'ARS' && !(rate > 0)){ cur = 'ARS'; pendiente = true; curUI(); calcular(); $('mep').focus(); return; }
+  if (pendiente){ pendiente = false; cur = c; curUI(); calcular(); return; }
+  for (const k of MONEY){
+    const x = parseFloat($(k).value); if (!isFinite(x) || !(rate > 0)) continue;
+    $(k).value = c === 'ARS' ? Math.round(x * rate / 1000) * 1000 : Math.round(x / rate);
+  }
+  cur = c; curUI(); calcular();
+}
 
 function leer(){
   const v = {}; for (const k of IDS) v[k] = parseFloat($(k).value);
+  if (cur === 'ARS') for (const k of MONEY) v[k] = rate > 0 ? v[k] / rate : NaN;
   v.edad = isFinite(v.edad) ? v.edad : 40; v.edadObj = Math.max(v.edad + 1, isFinite(v.edadObj) ? v.edadObj : 55);
   for (const k of ['cap','aporte','crec','extra','gasto','otros','rend','infl','costos']) if (!isFinite(v[k])) v[k] = 0;
   v.swr = Math.max(0.5, isFinite(v.swr) ? v.swr : 3.5); v.vol = Math.max(0, isFinite(v.vol) ? v.vol : 15);
@@ -216,8 +284,13 @@ function montecarlo(v, anios, N){
 }
 
 function calcular(){
+  ecos();
   const v = leer();
-  try { localStorage.setItem('atalaya.retiro', JSON.stringify(Object.fromEntries(IDS.map(k => [k, $(k).value])))); } catch(_) {}
+  try { localStorage.setItem('atalaya.retiro', JSON.stringify(Object.assign(Object.fromEntries(IDS.map(k => [k, $(k).value])), {cur:pendiente ? 'USD' : cur, mep:rate > 0 ? rate : '', mepInfo:rateInfo}))); } catch(_) {}
+  if (cur === 'ARS' && (pendiente || !(rate > 0))){
+    for (const id of ['kNum', 'kCap', 'kProb', 'kEdad', 'kNec']) $(id).textContent = '—';
+    $('verdict').textContent = 'Escribe la cotización del dólar MEP para calcular en pesos.'; return;
+  }
   const n = v.edadObj - v.edad, obj = objetivo(v), anios = Math.max(n + 5, 30);
   const esc = [['Pesimista', v.rend - 2], ['Base', v.rend], ['Optimista', v.rend + 2]].map(([nombre, rend]) => {
     const r = real(v, rend), c = camino(v, r, v.aporte, 60);
@@ -252,7 +325,7 @@ function dibujar(v, anios, serie, mc, obj){
   ctx.font = '11px "JetBrains Mono", monospace'; ctx.fillStyle = col('muted'); ctx.strokeStyle = col('line'); ctx.lineWidth = 1;
   const paso = [10e3, 25e3, 50e3, 100e3, 250e3, 500e3, 1e6, 2.5e6, 5e6].find(s => maxY / s <= 6) || 1e7;
   ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-  for (let val = 0; val <= maxY; val += paso){ const y = Math.round(Y(val)) + .5; ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - R, y); ctx.stroke(); ctx.fillText(val >= 1e6 ? nf1.format(val / 1e6) + ' M' : nf0.format(val / 1000) + ' k', L - 6, y); }
+  for (let val = 0; val <= maxY; val += paso){ const y = Math.round(Y(val)) + .5; ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - R, y); ctx.stroke(); const xv = enPesos() ? val * rate : val; ctx.fillText(xv >= 1e6 ? nf1.format(xv / 1e6) + ' M' : nf0.format(xv / 1000) + ' k', L - 6, y); }
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
   const pasoA = anios > 30 ? 10 : 5;
   for (let y = 0; y <= anios; y += pasoA) ctx.fillText(String(v.edad + y), X(y), T + ph + 7);
@@ -274,7 +347,23 @@ function dibujar(v, anios, serie, mc, obj){
   ctx.fillText('Objetivo ' + usdK(obj), L + 6, Y(obj) - 3);
 }
 
-$('f').addEventListener('input', calcular);
+$('f').addEventListener('input', e => {
+  if (e.target.id === 'mep'){
+    const v = parseFloat(e.target.value); rate = v > 0 ? v : NaN; rateInfo = rate > 0 ? 'Dólar MEP escrito a mano.' : '';
+    if (pendiente && rate > 0){
+      pendiente = false;
+      for (const k of MONEY){ const x = parseFloat($(k).value); if (isFinite(x)) $(k).value = Math.round(x * rate / 1000) * 1000; }
+    }
+    curUI();
+  }
+  calcular();
+});
+document.querySelectorAll('[data-cur]').forEach(b => b.addEventListener('click', () => setCur(b.dataset.cur)));
+$('mepUpd').addEventListener('click', async () => {
+  await traerMEP(); curUI(); calcular();
+});
+curUI();
+if (cur === 'ARS') traerMEP().then(() => { curUI(); calcular(); });
 $('f').addEventListener('submit', e => e.preventDefault());
 new ResizeObserver(calcular).observe($('cv').parentElement);
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', calcular);
