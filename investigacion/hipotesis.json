@@ -1,0 +1,357 @@
+{
+ "hipotesis": [
+  {
+   "id": "H001",
+   "nombre": "Ritmo horario y semanal",
+   "idea": "Cómo cambian el movimiento medio y la volatilidad según la hora UTC y el día.",
+   "estado": "descriptivo",
+   "codigo": "hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "tipo": "descriptivo",
+    "tabla": {
+     "por_hora": {
+      "media_pb": {
+       "0": 0.78,
+       "1": 1.07,
+       "2": -0.38,
+       "3": 0.17,
+       "4": -0.01,
+       "5": -0.18,
+       "6": 0.48,
+       "7": -0.15,
+       "8": 0.09,
+       "9": 0.22,
+       "10": 0.37,
+       "11": 0.78,
+       "12": -0.15,
+       "13": -0.77,
+       "14": -0.11,
+       "15": -1.0,
+       "16": 0.34,
+       "17": -0.68,
+       "18": 0.58,
+       "19": -0.37,
+       "20": 0.96,
+       "21": -0.18,
+       "22": 0.46,
+       "23": 0.54
+      },
+      "vol_pb": {
+       "0": 13.5,
+       "1": 15.7,
+       "2": 12.9,
+       "3": 11.0,
+       "4": 10.1,
+       "5": 12.7,
+       "6": 12.8,
+       "7": 13.0,
+       "8": 13.4,
+       "9": 12.1,
+       "10": 12.1,
+       "11": 13.0,
+       "12": 17.4,
+       "13": 19.3,
+       "14": 19.0,
+       "15": 17.0,
+       "16": 14.2,
+       "17": 13.1,
+       "18": 12.8,
+       "19": 12.8,
+       "20": 12.6,
+       "21": 11.5,
+       "22": 12.8,
+       "23": 13.3
+      }
+     },
+     "por_dia": {
+      "media_pb": {
+       "0": 0.05,
+       "1": -0.06,
+       "2": 0.51,
+       "3": 0.01,
+       "4": 0.09,
+       "5": 0.1,
+       "6": 0.13
+      },
+      "vol_pb": {
+       "0": 15.7,
+       "1": 15.3,
+       "2": 15.2,
+       "3": 15.5,
+       "4": 15.2,
+       "5": 9.1,
+       "6": 9.7
+      }
+     }
+    }
+   },
+   "nota": ""
+  },
+  {
+   "id": "H002",
+   "nombre": "Martillo diario tras caída",
+   "idea": "Tras 5 días de caída, una vela diaria con mecha inferior larga anticipa subida al día siguiente.",
+   "estado": "insuficiente",
+   "codigo": "hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 1,
+    "costo_pb": 3.0,
+    "muestra": {
+     "n": 44,
+     "media_pb": -10.11,
+     "aciertos_pct": 40.9,
+     "total_pct": -4.45,
+     "t": -0.84,
+     "p": 0.4033,
+     "factor_beneficio": 0.72
+    },
+    "validacion": {
+     "n": 22,
+     "media_pb": 22.92,
+     "aciertos_pct": 45.5,
+     "total_pct": 5.04,
+     "t": 0.8,
+     "p": 0.4218,
+     "factor_beneficio": 1.7
+    },
+    "total": {
+     "n": 66,
+     "media_pb": 0.9,
+     "aciertos_pct": 42.4,
+     "total_pct": 0.6,
+     "t": 0.07,
+     "p": 0.9422,
+     "factor_beneficio": 1.03
+    },
+    "azar_media_pb_p95": 19.5
+   },
+   "nota": ""
+  },
+  {
+   "id": "H003",
+   "nombre": "Ruptura del rango asiático en Londres",
+   "idea": "Si entre las 07 y 11 UTC el precio cierra fuera del rango 00-07 UTC, sigue en esa dirección 4 horas.",
+   "estado": "rechazada",
+   "codigo": "hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 4,
+    "costo_pb": 3.0,
+    "muestra": {
+     "n": 566,
+     "media_pb": -8.58,
+     "aciertos_pct": 38.7,
+     "total_pct": -48.58,
+     "t": -4.73,
+     "p": 0.0,
+     "factor_beneficio": 0.57
+    },
+    "validacion": {
+     "n": 409,
+     "media_pb": 3.67,
+     "aciertos_pct": 47.2,
+     "total_pct": 15.01,
+     "t": 1.58,
+     "p": 0.114,
+     "factor_beneficio": 1.27
+    },
+    "total": {
+     "n": 975,
+     "media_pb": -3.44,
+     "aciertos_pct": 42.3,
+     "total_pct": -33.57,
+     "t": -2.38,
+     "p": 0.0173,
+     "factor_beneficio": 0.8
+    },
+    "azar_media_pb_p95": -0.88
+   },
+   "nota": "Cambio de régimen: en 2021-mediados de 2024 la ruptura FALLABA (t=-4,7); desde entonces tiende a continuar (t=+1,6). Ninguna dirección es estable. Ver H006."
+  },
+  {
+   "id": "H004",
+   "nombre": "Reversión tras día de rango extremo",
+   "idea": "Tras un día con rango mayor a 1,8 veces el ATR, el día siguiente va en contra.",
+   "estado": "rechazada",
+   "codigo": "hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 1,
+    "costo_pb": 3.0,
+    "muestra": {
+     "n": 117,
+     "media_pb": 10.65,
+     "aciertos_pct": 53.0,
+     "total_pct": 12.46,
+     "t": 1.17,
+     "p": 0.244,
+     "factor_beneficio": 1.36
+    },
+    "validacion": {
+     "n": 82,
+     "media_pb": -42.96,
+     "aciertos_pct": 42.7,
+     "total_pct": -35.23,
+     "t": -1.96,
+     "p": 0.0494,
+     "factor_beneficio": 0.46
+    },
+    "total": {
+     "n": 199,
+     "media_pb": -11.44,
+     "aciertos_pct": 48.7,
+     "total_pct": -22.76,
+     "t": -1.08,
+     "p": 0.2816,
+     "factor_beneficio": 0.77
+    },
+    "azar_media_pb_p95": 10.68
+   },
+   "nota": "Mismo cambio de régimen que H003: revertía antes de 2024 y en validación continúa (t=-1,96)."
+  },
+  {
+   "id": "H005",
+   "nombre": "Reversión del fin de semana de PAXG",
+   "idea": "Cuando el oro tokenizado se mueve > 0,4 % con el mercado físico cerrado, al reabrir el oro (dom 22 UTC) se revierte en las 3 h siguientes.",
+   "estado": "en seguimiento",
+   "codigo": "hipotesis/dia001_exploracion.py",
+   "fecha": "2026-11-26",
+   "resultado": {
+    "horizonte": 3,
+    "costo_pb": 3.0,
+    "muestra": {
+     "n": 43,
+     "media_pb": 21.62,
+     "aciertos_pct": 69.8,
+     "total_pct": 9.3,
+     "t": 2.35,
+     "p": 0.0187,
+     "factor_beneficio": 3.11
+    },
+    "validacion": {
+     "n": 44,
+     "media_pb": 16.13,
+     "aciertos_pct": 54.5,
+     "total_pct": 7.1,
+     "t": 1.15,
+     "p": 0.2506,
+     "factor_beneficio": 1.71
+    },
+    "total": {
+     "n": 87,
+     "media_pb": 18.85,
+     "aciertos_pct": 62.1,
+     "total_pct": 16.4,
+     "t": 2.25,
+     "p": 0.0246,
+     "factor_beneficio": 2.14
+    },
+    "azar_media_pb_p95": 2.72
+   },
+   "nota": "Significativa en muestra (t=2,35), positiva pero no significativa en validación (n=44). A 12 h no funciona. Seguir en vivo cada domingo."
+  },
+  {
+   "id": "H006",
+   "nombre": "Detector de régimen",
+   "idea": "Medir si el mercado está en modo reversión o continuación (p. ej. autocorrelación de retornos de 1 h en 20 días, ratio de varianzas, Hurst) y comprobar si ese régimen predice si funciona H003 normal o invertida.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H007",
+   "nombre": "Barrida de liquidez del máximo/mínimo de ayer",
+   "idea": "Cuando el precio supera el máximo (o mínimo) del día anterior y en la misma vela de 1 h o la siguiente vuelve a cerrar dentro, ¿revierte hacia el pivote? Separar por régimen.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H008",
+   "nombre": "Quién lidera: PAXG o el contrato XAU de Hyperliquid",
+   "idea": "Correlación cruzada de retornos de 1 m/15 m entre PAXG (Binance) y xyz:GOLD (Hyperliquid). Si uno adelanta al otro, es información útil para entrar.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H009",
+   "nombre": "Imán de números redondos",
+   "idea": "¿El precio se detiene o rebota más de lo normal en múltiplos de 50 y 100 USD? Comparar con niveles al azar.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H010",
+   "nombre": "Compresión antes de la expansión",
+   "idea": "Tras N horas con rango muy inferior a su ATR (percentil 10), ¿la siguiente expansión tiene dirección predecible (por ejemplo, la de la tendencia de 4 h)?",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H011",
+   "nombre": "Rachas de velas",
+   "idea": "Tras k velas de 1 h seguidas en la misma dirección (k=4..7), ¿continúa o revierte la siguiente? Separar por régimen y por sesión.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H012",
+   "nombre": "Firma de la apertura de Nueva York",
+   "idea": "¿El movimiento de 13:30–14:30 UTC predice la dirección del resto de la sesión de EE. UU.? Distinguir días de datos macro (no disponibles: aproximar con la volatilidad de esa hora).",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H013",
+   "nombre": "Estructura de las mechas",
+   "idea": "¿El tamaño relativo de las mechas superior e inferior acumulado en 24 h (presión de compra/venta oculta) predice el retorno de las próximas 24 h?",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H014",
+   "nombre": "Distribución de tiempos hasta tocar niveles",
+   "idea": "Probabilidad empírica de que el precio toque el pivote, R1 o S1 durante el día según dónde abre. Sirve para calibrar los take profit del plan.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  },
+  {
+   "id": "H015",
+   "nombre": "Patrones de forma (búsqueda por similitud)",
+   "idea": "Buscar en la historia las ventanas de 48 h más parecidas (correlación de forma normalizada) a las últimas 48 h y ver si su continuación media es significativa frente a ventanas al azar.",
+   "estado": "pendiente",
+   "codigo": null,
+   "fecha": null,
+   "resultado": null,
+   "nota": ""
+  }
+ ],
+ "probadas": 5
+}
