@@ -31,6 +31,11 @@ Solo se escribe aquí lo que los datos sostienen. Las ideas sin probar van en `h
 
 - **H006 · Detector de régimen por ratio de varianzas (VR(4), 30 días):** rechazado. En el oro de 1 h el VR está casi siempre por debajo de 1 (96 % de las rupturas en muestra, 83 % en validación), así que el umbral 1 no separa regímenes; en validación la regla pierde (−0,8 pb bruto). La variante adaptativa (dirección de las últimas 20 rupturas) tampoco es significativa.
   - Pista no confirmada: en ambos tramos las rupturas con VR > 1 rinden más que con VR < 1, pero con solo 22 casos en muestra. Un umbral relativo ya estaría contaminado por haber visto la validación: solo podría confirmarse en vivo.
+- **H012 · Firma de la apertura de Nueva York:** rechazada (27-11). El movimiento de 13:30–14:30 UTC no predice el resto de la sesión (14:30–20:00).
+  - Datos de 15 m de PAXG, que solo existen desde 2023: la muestra es 2023-01 → 2024-06 (354 días); validación 617 días.
+  - Continuación: muestra −3,3 pb bruto (−6,3 neto, t = −2,45; casi todo el "significado" es el costo), validación +3,2 pb bruto, t ≈ 0. Correlación apertura→resto: −0,12 en muestra y +0,03 en validación.
+  - Invertida (revertir la apertura): +3,3 pb bruto en muestra (no significativo) y −3,2 pb en validación. Lo contrario tampoco funciona.
+  - Filtro de movimiento grande (proxy de datos macro) y ventana en hora de NY: tampoco pasan. Encaja con el cambio de régimen: antes de 2024 los movimientos de la apertura tendían a revertir; desde entonces, nada.
 - **H002 · Martillo diario tras caída:** sin ventaja. No usar un martillo diario como razón para comprar.
 - **H003 y H004 como reglas fijas:** ver el cambio de régimen en "Hallazgos firmes".
 
@@ -57,3 +62,9 @@ Solo se escribe aquí lo que los datos sostienen. Las ideas sin probar van en `h
   - Plan del día revisado: venta a favor del sesgo bajista pero contra el fuerte rebote de ayer; se exige confirmación. Acción de Gracias en EE. UU.
   - Seguimiento H005: sin datos nuevos (próxima medición el lunes 30-11, con el domingo 29-11).
   - Siguiente paso: H012 (firma de la apertura de Nueva York) o H010 (compresión antes de la expansión).
+- **2026-11-27** · Sesión 3:
+  - Probada H012 (firma de la apertura de Nueva York): rechazada en las 5 variantes; ni continuación ni reversión.
+  - Plan del día revisado: subida fuerte de ≈125 (más que el ATR) rompiendo el máximo de ayer; la venta en 3.670 va contra el movimiento del día y se marca como de tamaño reducido. Viernes tras Acción de Gracias, poca liquidez.
+  - Seguimiento H005: sin datos nuevos (próxima medición el lunes 30-11).
+  - Lección: los datos de 15 m empiezan en 2023, así que las pruebas intradía tienen una muestra más corta.
+  - Siguiente paso: H010 (compresión antes de la expansión) o H007 (barrida del máximo/mínimo de ayer).
