@@ -353,16 +353,6 @@
    "nota": ""
   },
   {
-   "id": "B008",
-   "nombre": "Horizonte largo para cubrir costos",
-   "idea": "Con 10 pb de costo, buscar señales de 1-5 días: tendencia diaria (EMA 20/50), rupturas de rangos semanales y reversión tras caídas de más de 3 ATR.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
    "id": "B009",
    "nombre": "Hora 20-22 UTC",
    "idea": "El ritmo horario muestra 21 y 22 UTC con la media más alta (+4,2 y +3,2 pb). ¿Es estable por año y sobrevive a la validación, o es ruido?",
@@ -421,7 +411,234 @@
    "fecha": null,
    "resultado": null,
    "nota": ""
+  },
+  {
+   "id": "B008",
+   "nombre": "Horizonte largo para cubrir costos",
+   "idea": "Señales diarias de 3-5 días: tendencia EMA 20/50, ruptura del rango de 7 días y reversión tras una caída > 1,5 ATR.",
+   "estado": "rechazada",
+   "codigo": "btc/hipotesis/b008_horizonte_largo.py",
+   "fecha": "2026-11-27",
+   "resultado": {
+    "a_tendencia_ema": {
+     "directa": {
+      "horizonte": 5,
+      "costo_pb": 10.0,
+      "muestra": {
+       "n": 390,
+       "media_pb": 69.55,
+       "aciertos_pct": 53.3,
+       "total_pct": 271.25,
+       "t": 1.82,
+       "p": 0.0686,
+       "factor_beneficio": 1.3,
+       "media_bruta_pb": 79.55
+      },
+      "validacion": {
+       "n": 175,
+       "media_pb": -9.0,
+       "aciertos_pct": 46.3,
+       "total_pct": -15.75,
+       "t": -0.23,
+       "p": 0.8195,
+       "factor_beneficio": 0.95,
+       "media_bruta_pb": 1.0
+      },
+      "total": {
+       "n": 565,
+       "media_pb": 45.22,
+       "aciertos_pct": 51.2,
+       "total_pct": 255.49,
+       "t": 1.56,
+       "p": 0.1199,
+       "factor_beneficio": 1.2,
+       "media_bruta_pb": 55.22
+      },
+      "azar_media_pb_p95": 50.73
+     },
+     "invertida": {
+      "horizonte": 5,
+      "costo_pb": 10.0,
+      "muestra": {
+       "n": 390,
+       "media_pb": -89.55,
+       "aciertos_pct": 45.6,
+       "total_pct": -349.25,
+       "t": -2.34,
+       "p": 0.0191,
+       "factor_beneficio": 0.71,
+       "media_bruta_pb": -79.55
+      },
+      "validacion": {
+       "n": 175,
+       "media_pb": -11.0,
+       "aciertos_pct": 52.0,
+       "total_pct": -19.25,
+       "t": -0.28,
+       "p": 0.7804,
+       "factor_beneficio": 0.94,
+       "media_bruta_pb": -1.0
+      },
+      "total": {
+       "n": 565,
+       "media_pb": -65.22,
+       "aciertos_pct": 47.6,
+       "total_pct": -368.49,
+       "t": -2.24,
+       "p": 0.0249,
+       "factor_beneficio": 0.76,
+       "media_bruta_pb": -55.22
+      },
+      "azar_media_pb_p95": 32.49
+     }
+    },
+    "b_ruptura_7d": {
+     "directa": {
+      "horizonte": 5,
+      "costo_pb": 10.0,
+      "muestra": {
+       "n": 193,
+       "media_pb": 7.22,
+       "aciertos_pct": 42.5,
+       "total_pct": 13.93,
+       "t": 0.12,
+       "p": 0.9027,
+       "factor_beneficio": 1.02,
+       "media_bruta_pb": 17.22
+      },
+      "validacion": {
+       "n": 85,
+       "media_pb": 40.94,
+       "aciertos_pct": 49.4,
+       "total_pct": 34.8,
+       "t": 0.68,
+       "p": 0.4982,
+       "factor_beneficio": 1.24,
+       "media_bruta_pb": 50.94
+      },
+      "total": {
+       "n": 278,
+       "media_pb": 17.53,
+       "aciertos_pct": 44.6,
+       "total_pct": 48.73,
+       "t": 0.39,
+       "p": 0.6962,
+       "factor_beneficio": 1.07,
+       "media_bruta_pb": 27.53
+      },
+      "azar_media_pb_p95": 81.06
+     },
+     "invertida": {
+      "horizonte": 5,
+      "costo_pb": 10.0,
+      "muestra": {
+       "n": 193,
+       "media_pb": -27.22,
+       "aciertos_pct": 55.4,
+       "total_pct": -52.53,
+       "t": -0.46,
+       "p": 0.6447,
+       "factor_beneficio": 0.91,
+       "media_bruta_pb": -17.22
+      },
+      "validacion": {
+       "n": 85,
+       "media_pb": -60.94,
+       "aciertos_pct": 50.6,
+       "total_pct": -51.8,
+       "t": -1.01,
+       "p": 0.3133,
+       "factor_beneficio": 0.73,
+       "media_bruta_pb": -50.94
+      },
+      "total": {
+       "n": 278,
+       "media_pb": -37.53,
+       "aciertos_pct": 54.0,
+       "total_pct": -104.33,
+       "t": -0.84,
+       "p": 0.4032,
+       "factor_beneficio": 0.87,
+       "media_bruta_pb": -27.53
+      },
+      "azar_media_pb_p95": 47.51
+     }
+    },
+    "c_reversion_caida": {
+     "directa": {
+      "horizonte": 3,
+      "costo_pb": 10.0,
+      "muestra": {
+       "n": 35,
+       "media_pb": 5.8,
+       "aciertos_pct": 45.7,
+       "total_pct": 2.03,
+       "t": 0.05,
+       "p": 0.9588,
+       "factor_beneficio": 1.02,
+       "media_bruta_pb": 15.8
+      },
+      "validacion": {
+       "n": 17,
+       "media_pb": -34.7,
+       "aciertos_pct": 52.9,
+       "total_pct": -5.9,
+       "t": -0.21,
+       "p": 0.8369,
+       "factor_beneficio": 0.87,
+       "media_bruta_pb": -24.7
+      },
+      "total": {
+       "n": 52,
+       "media_pb": -7.44,
+       "aciertos_pct": 48.1,
+       "total_pct": -3.87,
+       "t": -0.08,
+       "p": 0.936,
+       "factor_beneficio": 0.97,
+       "media_bruta_pb": 2.56
+      },
+      "azar_media_pb_p95": 156.29
+     },
+     "invertida": {
+      "horizonte": 3,
+      "costo_pb": 10.0,
+      "muestra": {
+       "n": 35,
+       "media_pb": -25.8,
+       "aciertos_pct": 51.4,
+       "total_pct": -9.03,
+       "t": -0.23,
+       "p": 0.8182,
+       "factor_beneficio": 0.9,
+       "media_bruta_pb": -15.8
+      },
+      "validacion": {
+       "n": 17,
+       "media_pb": 14.7,
+       "aciertos_pct": 47.1,
+       "total_pct": 2.5,
+       "t": 0.09,
+       "p": 0.9305,
+       "factor_beneficio": 1.06,
+       "media_bruta_pb": 24.7
+      },
+      "total": {
+       "n": 52,
+       "media_pb": -12.56,
+       "aciertos_pct": 50.0,
+       "total_pct": -6.53,
+       "t": -0.14,
+       "p": 0.8921,
+       "factor_beneficio": 0.95,
+       "media_bruta_pb": -2.56
+      },
+      "azar_media_pb_p95": 75.33
+     }
+    }
+   },
+   "nota": "Ninguna variante pasa. La tendencia EMA 20/50 da +80 pb brutos en muestra (p=0,07, por debajo del umbral Bonferroni) pero +1 pb en validación: la ventaja de la muestra era sobre todo la gran tendencia 2020-21. Ruptura de 7 días y reversión tras caída: ruido; invertidas tampoco funcionan."
   }
  ],
- "probadas": 7
+ "probadas": 8
 }
