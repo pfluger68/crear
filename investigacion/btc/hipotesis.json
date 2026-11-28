@@ -353,16 +353,6 @@
    "nota": ""
   },
   {
-   "id": "B009",
-   "nombre": "Hora 20-22 UTC",
-   "idea": "El ritmo horario muestra 21 y 22 UTC con la media más alta (+4,2 y +3,2 pb). ¿Es estable por año y sobrevive a la validación, o es ruido?",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
    "id": "B010",
    "nombre": "Barridas de liquidez del máximo/mínimo semanal",
    "idea": "Si BTC supera el máximo de la semana anterior y vuelve a cerrar dentro en 4 h, ¿revierte hacia la mitad del rango?",
@@ -638,7 +628,51 @@
     }
    },
    "nota": "Ninguna variante pasa. La tendencia EMA 20/50 da +80 pb brutos en muestra (p=0,07, por debajo del umbral Bonferroni) pero +1 pb en validación: la ventaja de la muestra era sobre todo la gran tendencia 2020-21. Ruptura de 7 días y reversión tras caída: ruido; invertidas tampoco funcionan."
+  },
+  {
+   "id": "B009",
+   "nombre": "Hora 20-22 UTC",
+   "idea": "Largo de 20 a 23 UTC cada día (3 h).",
+   "estado": "rechazada",
+   "codigo": "btc/hipotesis/b009_hora_20_22.py",
+   "fecha": "2026-11-28",
+   "resultado": {
+    "horizonte": 3,
+    "costo_pb": 10.0,
+    "muestra": {
+     "n": 2008,
+     "media_pb": 0.75,
+     "aciertos_pct": 49.1,
+     "total_pct": 15.01,
+     "t": 0.3,
+     "p": 0.7644,
+     "factor_beneficio": 1.02,
+     "media_bruta_pb": 10.75
+    },
+    "validacion": {
+     "n": 880,
+     "media_pb": -4.82,
+     "aciertos_pct": 43.2,
+     "total_pct": -42.38,
+     "t": -1.83,
+     "p": 0.0667,
+     "factor_beneficio": 0.83,
+     "media_bruta_pb": 5.18
+    },
+    "total": {
+     "n": 2888,
+     "media_pb": -0.95,
+     "aciertos_pct": 47.3,
+     "total_pct": -27.37,
+     "t": -0.5,
+     "p": 0.62,
+     "factor_beneficio": 0.97,
+     "media_bruta_pb": 9.05
+    },
+    "azar_media_pb_p95": -5.48
+   },
+   "nota": "Bruto por año (pb, bloque 3 h): {2019: 9.7, 2020: 22.1, 2021: 8.2, 2022: 3.6, 2023: 9.2, 2024: 9.6, 2025: 7.9, 2026: 1.4}. Invertida: muestra -20.75 / val -15.18 pb. Como operación sola no cubre 10 pb (neta +0,8 / -4,8 pb). Pero el sesgo horario es real: bruto positivo los 8 años 2019-2026; frente al resto de horas (≈0 pb por bloque de 3 h) suma ≈+10 pb en muestra y ≈+6 pb en validación, y la invertida pierde con t=-8 y t=-6. Se va debilitando (2026: +1,4 pb). Uso: filtro de tiempo, no vender en corto de 20 a 23 UTC; no es señal operable."
   }
  ],
- "probadas": 8
+ "probadas": 9
 }

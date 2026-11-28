@@ -1,1 +1,8 @@
-{}
+{
+ "B009": {
+  "idea": "Bloque 20-23 UTC (largo de la apertura de 20 a cierre de 22 UTC): retorno bruto en pb de cada día nuevo.",
+  "desde": "2026-11-28",
+  "casos": [],
+  "nota": "Se mide como filtro: ¿sigue positivo en bruto? Necesita 30 casos antes de considerarlo firme."
+ }
+}

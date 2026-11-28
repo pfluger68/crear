@@ -14,9 +14,10 @@ Las reglas de método son las de `investigacion/README.md`.
 2. **En BTC, la ruptura del rango asiático durante Londres suele fallar** (B002), en ambos tramos, y en casi todos los años desde 2019. El oro hacía lo mismo hasta 2024. Hacer lo contrario no cubre los costos (B006), pero **sirve como filtro: no perseguir esas rupturas**.
 3. **La volatilidad máxima está entre las 13 y las 16 UTC** (apertura de EE. UU.; ~50 pb por hora frente a ~31 pb a las 04 UTC). Sábado y domingo la volatilidad baja un tercio (B001).
 
+
 ## En seguimiento
 
-- **B009 · Hora 20–22 UTC:** media positiva en el perfil horario. Pendiente de validar (puede ser ruido).
+- **B009 · Sesgo alcista de 20 a 23 UTC (filtro de tiempo, no señal):** El bloque de 3 h es positivo en bruto los 8 años (2019–2026). Frente al resto de horas (≈0 pb) suma ≈+10 pb en la muestra y ≈+6 pb en la validación; la señal invertida pierde con t = −8 y −6. Pero no cubre los 10 pb de costo como operación sola (neta +0,8 / −4,8 pb) y se debilita (2026: +1,4 pb). Uso: **no abrir cortos de 20 a 23 UTC**. Aún no tiene 30 casos nuevos en seguimiento. Se cuenta en `seguimiento.json` el retorno bruto de cada bloque desde 2026-11-28.
 
 ## Descartado
 
@@ -40,3 +41,4 @@ Las reglas de método son las de `investigacion/README.md`.
   - Probadas B001–B007.
   - Lección de método: mirar la media bruta y la señal invertida (añadido al motor).
 - **2026-11-27** · Día 2: B008 (horizonte largo, 3 variantes) rechazada en ambos sentidos. Probadas: 8 hipótesis de BTC; con tantas pruebas, el umbral efectivo sube.
+- **2026-11-28** · Día 3: B009 (20–23 UTC) probada: sesgo real y estable por años, pero no cubre costos; pasa a filtro de tiempo. Repliqué B008 por error (no había leído la sesión del 27): mismo resultado, +80 pb brutos en muestra y +1 pb en validación; además, el rebote tras caídas diarias > 3 ATR solo tiene 6 casos (insuficiente). Lección: hacer `git pull` antes de elegir hipótesis.
