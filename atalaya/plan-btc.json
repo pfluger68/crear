@@ -1,80 +1,91 @@
 {
- "fecha": "2026-11-26",
- "generado": "2026-11-26T05:22Z",
+ "fecha": "2026-11-27",
+ "generado": "2026-11-27T15:50Z",
  "mercado": "BTCUSDT",
  "fuente": "Binance BTC/USDT",
- "precio": 60902.7,
+ "precio": 60168.67,
  "sesgo": "bajista",
- "atr_diario": 3523.7,
- "atr_1h": 673.96,
+ "atr_diario": 3423.91,
+ "atr_1h": 570.67,
  "contexto": {
-  "ema20_d": 65969.09,
-  "ema50_d": 72014.06,
+  "ema20_d": 65455.58,
+  "ema50_d": 71565.55,
   "ayer": {
-   "max": 60568.01,
-   "min": 57300.38,
-   "cierre": 60458.01
+   "max": 61622.38,
+   "min": 59915.0,
+   "cierre": 60577.18
   },
-  "pivote": 59442.13
+  "pivote": 60704.85
  },
  "zonas": [
   {
    "tipo": "venta",
-   "desde": 61510.82,
-   "hasta": 61713.01,
-   "peso": 4.0,
-   "motivo": "EMA 50 de 4 h, R1, giro de 1 h"
+   "desde": 60298.43,
+   "hasta": 60469.63,
+   "peso": 3.5,
+   "motivo": "nodo de volumen, giro de 1 h, giro de 4 h"
   },
   {
    "tipo": "venta",
-   "desde": 61910.36,
-   "hasta": 62112.54,
-   "peso": 2.5,
-   "motivo": "giro de 1 h, giro de 4 h"
-  },
-  {
-   "tipo": "venta",
-   "desde": 63243.23,
-   "hasta": 63445.42,
-   "peso": 2.0,
-   "motivo": "giro de 4 h, nodo de volumen"
-  },
-  {
-   "tipo": "compra",
-   "desde": 59174.06,
-   "hasta": 59713.24,
+   "desde": 60605.68,
+   "hasta": 61006.0,
    "peso": 5.0,
-   "motivo": "nodo de volumen, giro de 1 h, pivote"
+   "motivo": "nodo de volumen, giro de 1 h, pivote, giro de 4 h"
+  },
+  {
+   "tipo": "venta",
+   "desde": 61290.49,
+   "hasta": 61682.01,
+   "peso": 6.5,
+   "motivo": "nodo de volumen, EMA 50 de 4 h, R1, giro de 1 h, giro de 4 h, máximo de ayer"
   },
   {
    "tipo": "compra",
-   "desde": 57199.29,
-   "hasta": 57401.47,
-   "peso": 3.0,
-   "motivo": "giro de 1 h, giro de 4 h, mínimo de ayer"
+   "desde": 59765.56,
+   "hasta": 59936.76,
+   "peso": 4.0,
+   "motivo": "S1, giro de 1 h, giro de 4 h, mínimo de ayer"
+  },
+  {
+   "tipo": "compra",
+   "desde": 59260.0,
+   "hasta": 59489.63,
+   "peso": 2.5,
+   "motivo": "giro de 1 h"
+  },
+  {
+   "tipo": "compra",
+   "desde": 57214.78,
+   "hasta": 57385.98,
+   "peso": 2.0,
+   "motivo": "giro de 1 h, giro de 4 h"
   }
  ],
  "operaciones": [
   {
    "lado": "venta",
-   "entrada": 61611.91,
-   "sl": 62117.39,
-   "tp1": 59443.65,
-   "tp2": 57300.38,
-   "rb1": 4.29,
+   "entrada": 60384.03,
+   "sl": 60812.04,
+   "tp1": 59851.16,
+   "tp2": 59374.82,
+   "rb1": 1.25,
    "a_favor": true,
    "condicion": "Entrar solo si en 15 m aparece rechazo dentro de la zona (mecha o vela envolvente). Si no, no hay operación."
   },
   {
    "lado": "compra",
-   "entrada": 59443.65,
-   "sl": 58769.69,
-   "tp1": 61611.91,
-   "tp2": 62011.45,
-   "rb1": 3.22,
+   "entrada": 59851.16,
+   "sl": 59423.16,
+   "tp1": 60384.03,
+   "tp2": 60805.84,
+   "rb1": 1.25,
    "a_favor": false,
    "condicion": "Entrar solo si en 15 m aparece rechazo dentro de la zona (mecha o vela envolvente). Si no, no hay operación."
   }
  ],
- "notas": []
+ "notas": [
+  "Sesgo bajista por EMA 20 < EMA 50 diaria, pero B008 (27-11) mostró que esa regla de tendencia no tiene ventaja fuera de muestra (+1 pb a 5 días): tomar el sesgo como contexto, no como ventaja.",
+  "R:B de TP1 solo 1,25 (~88 pb de recorrido frente a ~71 pb de stop). Con 10 pb de costo, priorizar TP2 o reducir tamaño; la compra contra el sesgo es la más débil.",
+  "No perseguir rupturas del rango asiático durante Londres (B002)."
+ ]
 }

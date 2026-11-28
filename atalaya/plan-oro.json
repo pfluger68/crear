@@ -1,84 +1,85 @@
 {
- "fecha": "2026-11-26",
- "generado": "2026-11-26T08:06Z",
+ "fecha": "2026-11-27",
+ "generado": "2026-11-27T15:49Z",
  "mercado": "XAUUSD",
  "fuente": "Hyperliquid xyz:GOLD",
- "precio": 3567.5,
+ "precio": 3634.2,
  "sesgo": "bajista",
- "atr_diario": 113.75,
- "atr_1h": 24.64,
+ "atr_diario": 107.13,
+ "atr_1h": 20.55,
  "contexto": {
-  "ema20_d": 3759.01,
-  "ema50_d": 3930.03,
+  "ema20_d": 3740.97,
+  "ema50_d": 3915.9,
   "ayer": {
-   "max": 3593.1,
-   "min": 3429.0,
-   "cierre": 3578.5
+   "max": 3609.6,
+   "min": 3553.8,
+   "cierre": 3569.6
   },
-  "pivote": 3533.53
+  "pivote": 3577.67
  },
  "zonas": [
   {
    "tipo": "venta",
-   "desde": 3593.1,
+   "desde": 3667.03,
+   "hasta": 3673.2,
+   "peso": 2.0,
+   "motivo": "giro de 4 h, nodo de volumen"
+  },
+  {
+   "tipo": "venta",
+   "desde": 3678.8,
+   "hasta": 3690.0,
+   "peso": 2.5,
+   "motivo": "giro de 1 h, giro de 4 h"
+  },
+  {
+   "tipo": "compra",
+   "desde": 3618.66,
+   "hasta": 3624.82,
+   "peso": 2.0,
+   "motivo": "giro de 1 h, EMA 50 de 4 h"
+  },
+  {
+   "tipo": "compra",
+   "desde": 3601.53,
    "hasta": 3609.6,
-   "peso": 4.0,
-   "motivo": "máximo de ayer, nodo de volumen, giro de 1 h"
-  },
-  {
-   "tipo": "venta",
-   "desde": 3620.3,
-   "hasta": 3647.4,
    "peso": 4.5,
-   "motivo": "giro de 1 h, EMA 50 de 4 h, R1"
-  },
-  {
-   "tipo": "venta",
-   "desde": 3670.0,
-   "hasta": 3678.8,
-   "peso": 3.0,
-   "motivo": "giro de 4 h, nodo de volumen, giro de 1 h"
+   "motivo": "R1, giro de 1 h, giro de 4 h, máximo de ayer"
   },
   {
    "tipo": "compra",
-   "desde": 3529.3,
-   "hasta": 3537.69,
-   "peso": 3.0,
-   "motivo": "giro de 4 h, pivote, nodo de volumen"
-  },
-  {
-   "tipo": "compra",
-   "desde": 3425.3,
-   "hasta": 3432.7,
-   "peso": 3.0,
-   "motivo": "giro de 1 h, giro de 4 h, mínimo de ayer"
+   "desde": 3571.55,
+   "hasta": 3577.71,
+   "peso": 3.5,
+   "motivo": "nodo de volumen, giro de 1 h, pivote"
   }
  ],
  "operaciones": [
   {
    "lado": "venta",
-   "entrada": 3601.35,
-   "sl": 3624.38,
-   "tp1": 3533.49,
-   "tp2": 3429.0,
-   "rb1": 2.95,
+   "entrada": 3670.11,
+   "sl": 3685.53,
+   "tp1": 3621.74,
+   "tp2": 3605.57,
+   "rb1": 3.14,
    "a_favor": true,
    "condicion": "Entrar solo si en 15 m aparece rechazo dentro de la zona (mecha o vela envolvente). Si no, no hay operación."
   },
   {
    "lado": "compra",
-   "entrada": 3533.49,
-   "sl": 3514.52,
-   "tp1": 3601.35,
-   "tp2": 3633.85,
-   "rb1": 3.58,
+   "entrada": 3621.74,
+   "sl": 3606.33,
+   "tp1": 3670.11,
+   "tp2": 3684.4,
+   "rb1": 3.14,
    "a_favor": false,
    "condicion": "Entrar solo si en 15 m aparece rechazo dentro de la zona (mecha o vela envolvente). Si no, no hay operación."
   }
  ],
  "notas": [
-  "Revisión con CONOCIMIENTO.md: ayer fue un día alcista fuerte (rango 164 = 1,44 x ATR, cierre en el 91 % del rango) dentro de un sesgo diario bajista. Desde mediados de 2024 el régimen premia la continuación (H003/H004), así que la venta a favor del sesgo va contra el impulso de ayer: exigir el rechazo en 15 m sin excepciones y no anticiparla. Niveles sin cambios.",
-  "Hoy es Acción de Gracias en EE. UU.: la ventana 12–15 UTC, normalmente la más volátil (H001), probablemente llegue con menos liquidez y movimientos más erráticos.",
-  "H006 (detector de régimen por ratio de varianzas) fue rechazado hoy: sigue sin haber un detector validado; se mantiene la regla prudente."
+  "Revisión 27-11: hoy el oro subió de 3.561 a 3.686 (≈125, más que el ATR diario de 107) y rompió el máximo de ayer (3.609,6). Desde 2024 el régimen premia la continuación: la venta en 3.670 es a favor del sesgo diario pero contra el movimiento fuerte del día. Solo con rechazo claro en 15 m y tamaño reducido.",
+  "La compra en 3.618–3.625 es un retroceso a favor del movimiento del día (contra el sesgo diario). Si el precio pierde la zona 3.601–3.610 (máximo de ayer), la ruptura de hoy habría fallado: no comprar por debajo.",
+  "La caída de la apertura de Nueva York (13:30–14:30 UTC, ≈−33) no anticipa el resto de la sesión: H012 rechazada hoy (sin ventaja en validación).",
+  "Viernes tras Acción de Gracias: sesión de EE. UU. corta y poco líquida; mechas y huecos más probables."
  ]
 }
