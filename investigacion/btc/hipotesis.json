@@ -353,16 +353,6 @@
    "nota": ""
   },
   {
-   "id": "B008",
-   "nombre": "Horizonte largo para cubrir costos",
-   "idea": "Con 10 pb de costo, buscar señales de 1-5 días: tendencia diaria (EMA 20/50), rupturas de rangos semanales y reversión tras caídas de más de 3 ATR.",
-   "estado": "pendiente",
-   "codigo": null,
-   "fecha": null,
-   "resultado": null,
-   "nota": ""
-  },
-  {
    "id": "B009",
    "nombre": "Hora 20-22 UTC",
    "idea": "El ritmo horario muestra 21 y 22 UTC con la media más alta (+4,2 y +3,2 pb). ¿Es estable por año y sobrevive a la validación, o es ruido?",
@@ -421,7 +411,88 @@
    "fecha": null,
    "resultado": null,
    "nota": ""
+  },
+  {
+   "id": "B008",
+   "nombre": "Horizonte largo: tendencia EMA 20/50 diaria (5 días)",
+   "idea": "Largo si EMA20>EMA50 diaria, corto si no; mantener 5 días, sin solapar.",
+   "estado": "rechazada",
+   "codigo": "btc/hipotesis/b008_horizonte_diario.py",
+   "fecha": "2026-11-28",
+   "resultado": {
+    "horizonte": 5,
+    "costo_pb": 10.0,
+    "muestra": {
+     "n": 390,
+     "media_pb": 69.55,
+     "aciertos_pct": 53.3,
+     "total_pct": 271.25,
+     "t": 1.82,
+     "p": 0.0686,
+     "factor_beneficio": 1.3,
+     "media_bruta_pb": 79.55
+    },
+    "validacion": {
+     "n": 175,
+     "media_pb": -9.0,
+     "aciertos_pct": 46.3,
+     "total_pct": -15.75,
+     "t": -0.23,
+     "p": 0.8195,
+     "factor_beneficio": 0.95,
+     "media_bruta_pb": 1.0
+    },
+    "total": {
+     "n": 565,
+     "media_pb": 45.22,
+     "aciertos_pct": 51.2,
+     "total_pct": 255.49,
+     "t": 1.56,
+     "p": 0.1199,
+     "factor_beneficio": 1.2,
+     "media_bruta_pb": 55.22
+    },
+    "azar_media_pb_p95": 49.49
+   },
+   "nota": "A invertida: muestra -89.55 pb, validación -11.0 pb. Solo largos: muestra 94.92 / val -0.85 pb; comprar siempre 5 d: muestra 58.66 / val -9.76 pb."
+  },
+  {
+   "id": "B015",
+   "nombre": "Rebote tras caída diaria de más de 3 ATR (5 días)",
+   "idea": "Si el cierre diario cae más de 3 ATR14 respecto al anterior, largo 5 días.",
+   "estado": "insuficiente",
+   "codigo": "btc/hipotesis/b008_horizonte_diario.py",
+   "fecha": "2026-11-28",
+   "resultado": {
+    "horizonte": 5,
+    "costo_pb": 10.0,
+    "muestra": {
+     "n": 6,
+     "media_pb": -147.2,
+     "aciertos_pct": 33.3,
+     "total_pct": -8.83,
+     "t": -0.47,
+     "p": 0.6375,
+     "factor_beneficio": 0.58,
+     "media_bruta_pb": -137.2
+    },
+    "validacion": {
+     "n": 0
+    },
+    "total": {
+     "n": 6,
+     "media_pb": -147.2,
+     "aciertos_pct": 33.3,
+     "total_pct": -8.83,
+     "t": -0.47,
+     "p": 0.6375,
+     "factor_beneficio": 0.58,
+     "media_bruta_pb": -137.2
+    },
+    "azar_media_pb_p95": 537.53
+   },
+   "nota": "Invertida: muestra 127.2 pb, validación None pb."
   }
  ],
- "probadas": 7
+ "probadas": 9
 }
